@@ -7,12 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 
 class ScooterSharingActivity : AppCompatActivity() {
 
-    private lateinit var startRideButton: Button
-    private lateinit var editRideButton: Button
-
-    companion object {
-        lateinit var ridesDB: RidesDB
-    }
+    private lateinit var startRideButton : Button
+    private lateinit var editRideButton : Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +16,6 @@ class ScooterSharingActivity : AppCompatActivity() {
 
         startRideButton = findViewById(R.id.start_ride_button)
         editRideButton = findViewById(R.id.edit_ride_button)
-        ridesDB = RidesDB.get(this)
 
         startRideButton.setOnClickListener {
             val intent = Intent(this, StartRideActivity::class.java)
