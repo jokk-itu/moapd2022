@@ -6,4 +6,5 @@
     <string name="start_ride_button">Start Ride</string>
     <string name="update_ride_button">Update Ride</string>
     <string name="edit_ride_button">Edit Ride</string>
+    <string name="list_rides_button">List Rides</string>
 </resources>

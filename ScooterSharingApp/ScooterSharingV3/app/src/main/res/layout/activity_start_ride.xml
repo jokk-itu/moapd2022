@@ -16,12 +16,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="5dp"
+            android:paddingStart="5dp"
             android:text="@string/info_text" />
 
         <EditText
             android:id="@+id/info_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:autofillHints="Information" />
     </LinearLayout>
 
     <LinearLayout
@@ -37,7 +40,9 @@
         <EditText
             android:id="@+id/name_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:autofillHints="Name"/>
     </LinearLayout>
 
     <LinearLayout
@@ -53,7 +58,9 @@
         <EditText
             android:id="@+id/where_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:autofillHints="Where"/>
     </LinearLayout>
 
     <Button
