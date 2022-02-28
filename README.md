@@ -46,8 +46,8 @@ The apps presented in the lectures and apps developed in the exercise sessions c
 | 02 | 08/02/2022 | [Introduction to Kotlin for Mobile Development](lecture02) |
 | 03 | 15/02/2022 | [App Resources and Basic User Interfaces](lecture03) |
 | 04 | 22/02/2022 | [Advanced User Interfaces](lecture04) |
-| 05 | 01/03/2022 | Flexible Data View and Threads |
-| 06 | 08/03/2022 | Android Backend with Google Firebase |
+| 05 | 01/03/2022 | [Flexible Data View and Threads](lecture05) |
+| 06 | 08/03/2022 | [Android Backend with Google Firebase](lecture06) |
 | 07 | 15/03/2022 | Storage in Android (Part 01) |
 | 08 | 22/03/2022 | Storage in Android (Part 02) |
 | 09 | 29/03/2022 | Geolocation Based Applications |
