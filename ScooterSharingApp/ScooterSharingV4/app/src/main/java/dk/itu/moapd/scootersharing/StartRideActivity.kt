@@ -15,6 +15,10 @@ class StartRideActivity : AppCompatActivity() {
 
     private val scooter: Scooter = Scooter()
 
+    companion object {
+        lateinit var ridesDB: RidesDB
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start_ride)
@@ -23,6 +27,7 @@ class StartRideActivity : AppCompatActivity() {
         nameText = findViewById(R.id.name_text)
         whereText = findViewById(R.id.where_text)
         startButton = findViewById(R.id.start_button)
+        ridesDB = RidesDB.get(this)
 
         startButton.setOnClickListener {
             if (nameText.text.isNotEmpty()

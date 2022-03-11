@@ -15,10 +15,6 @@ class EditRideActivity : AppCompatActivity() {
 
     private val scooter: Scooter = Scooter()
 
-    companion object {
-        lateinit var ridesDB: RidesDB
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_ride)
@@ -27,7 +23,6 @@ class EditRideActivity : AppCompatActivity() {
         nameText = findViewById(R.id.name_text)
         whereText = findViewById(R.id.where_text)
         updateButton = findViewById(R.id.update_button)
-        ridesDB = RidesDB.get(this)
 
         updateButton.setOnClickListener {
             if (nameText.text.isNotEmpty()

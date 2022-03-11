@@ -6,6 +6,9 @@
         <entry key="app/src/main/res/layout/activity_edit_ride.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_scooter_sharing.xml" value="0.1787037037037037" />
         <entry key="app/src/main/res/layout/activity_start_ride.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_list_rides.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_ride_list.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/list_item_ride.xml" value="0.1" />
       </map>
     </option>
   </component>
