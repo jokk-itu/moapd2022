@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">ScooterSharing</string>
+    <string name="where_text">Where:</string>
+    <string name="name_text">Name:</string>
+    <string name="info_text">Info:</string>
+    <string name="start_ride_button">Start Ride</string>
+    <string name="update_ride_button">Update Ride</string>
+    <string name="edit_ride_button">Edit Ride</string>
+    <string name="list_rides_button">List Rides</string>
+    <string name="dialog_delete_scooter_message">Delete Scooter?</string>
+    <string name="dialog_delete_scooter_yes">Yes</string>
+    <string name="dialog_delete_scooter_no">No</string>
+</resources>
