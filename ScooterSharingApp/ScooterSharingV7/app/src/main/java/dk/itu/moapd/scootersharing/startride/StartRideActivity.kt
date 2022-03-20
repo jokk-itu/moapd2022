@@ -3,7 +3,7 @@ package dk.itu.moapd.scootersharing.startride
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import dk.itu.moapd.scootersharing.R
-import dk.itu.moapd.scootersharing.model.RidesDB
+import dk.itu.moapd.scootersharing.data.RidesDB
 
 class StartRideActivity : AppCompatActivity() {
 

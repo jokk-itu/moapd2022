@@ -1,4 +1,4 @@
-package dk.itu.moapd.scootersharing.model
+package dk.itu.moapd.scootersharing.data.model
 
 import java.text.SimpleDateFormat
 import java.util.*

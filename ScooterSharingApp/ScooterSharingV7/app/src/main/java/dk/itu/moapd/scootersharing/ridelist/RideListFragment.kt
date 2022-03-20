@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dk.itu.moapd.scootersharing.R
 import dk.itu.moapd.scootersharing.ScooterSharingActivity.Companion.ridesDB
-import dk.itu.moapd.scootersharing.model.Scooter
+import dk.itu.moapd.scootersharing.data.model.Scooter
 
 class RideListFragment : Fragment() {
 

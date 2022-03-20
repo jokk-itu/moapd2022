@@ -10,4 +10,9 @@
     <string name="dialog_delete_scooter_message">Delete Scooter?</string>
     <string name="dialog_delete_scooter_yes">Yes</string>
     <string name="dialog_delete_scooter_no">No</string>
+    <string name="sign_out">Sign out</string>
+    <string name="content_description_sign_out">Sign out</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Login</string>
 </resources>

@@ -1,10 +1,17 @@
 package dk.itu.moapd.scootersharing
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import dk.itu.moapd.scootersharing.model.RidesDB
+import dk.itu.moapd.scootersharing.data.RidesDB
+import com.google.firebase.auth.FirebaseAuth
+import dk.itu.moapd.scootersharing.databinding.ActivityScooterSharingBinding
+import dk.itu.moapd.scootersharing.login.LoginActivity
 
 class ScooterSharingActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityScooterSharingBinding
+    private lateinit var auth: FirebaseAuth
 
     companion object {
         lateinit var ridesDB: RidesDB
@@ -12,7 +19,21 @@ class ScooterSharingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_scooter_sharing)
+        binding = ActivityScooterSharingBinding.inflate(layoutInflater)
+
+        auth = FirebaseAuth.getInstance()
+
+        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when(menuItem.itemId) {
+                R.id.more -> {
+                    auth.signOut()
+                    startLoginActivity()
+                    true
+                }
+                else -> false
+            }
+        }
+
         ridesDB = RidesDB.get(this)
 
         val scooterSharingFragment = supportFragmentManager.findFragmentById(R.id.fragment_scooter_sharing_container)
@@ -24,5 +45,22 @@ class ScooterSharingActivity : AppCompatActivity() {
                 .add(R.id.fragment_scooter_sharing_container, fragment)
                 .commit()
         }
+
+        setContentView(binding.root)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        if(auth.currentUser == null)
+            startLoginActivity()
+
+        val user = auth.currentUser
+    }
+
+    private fun startLoginActivity() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

@@ -1,6 +1,6 @@
 package dk.itu.moapd.scootersharing
 
-import dk.itu.moapd.scootersharing.model.Scooter
+import dk.itu.moapd.scootersharing.data.model.Scooter
 import org.junit.Test
 import java.text.SimpleDateFormat
 import java.util.*
