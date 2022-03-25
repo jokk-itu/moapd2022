@@ -3,9 +3,13 @@ package dk.itu.moapd.scootersharing.startride
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import dk.itu.moapd.scootersharing.R
+import dk.itu.moapd.scootersharing.databinding.ActivityScooterSharingBinding
+import dk.itu.moapd.scootersharing.databinding.ActivityStartRideBinding
 import dk.itu.moapd.scootersharing.model.RidesDB
 
 class StartRideActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityStartRideBinding
 
     companion object {
         lateinit var ridesDB: RidesDB
@@ -13,18 +17,20 @@ class StartRideActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_start_ride)
+        binding = ActivityStartRideBinding.inflate(layoutInflater)
 
         ridesDB = RidesDB.get(this)
 
-        val startRideFragment = supportFragmentManager.findFragmentById(R.id.fragment_start_ride_container)
+        val startRideFragment = supportFragmentManager.findFragmentById(binding.fragmentStartRideContainer.id)
 
         if(startRideFragment == null) {
             val fragment = StartRideFragment()
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragment_start_ride_container, fragment)
+                .add(binding.fragmentStartRideContainer.id, fragment)
                 .commit()
         }
+
+        setContentView(binding.root)
     }
 }

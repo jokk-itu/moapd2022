@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import dk.itu.moapd.scootersharing.databinding.FragmentScooterSharingBinding
 import dk.itu.moapd.scootersharing.editride.EditRideActivity
 import dk.itu.moapd.scootersharing.ridelist.RideListFragment
 import dk.itu.moapd.scootersharing.startride.StartRideActivity
 
 class ScooterSharingFragment : Fragment() {
 
+    private lateinit var binding: FragmentScooterSharingBinding
     private lateinit var startRideButton: Button
     private lateinit var editRideButton: Button
     private lateinit var listRidesButton : Button
@@ -26,11 +28,11 @@ class ScooterSharingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_scooter_sharing, container, false)
+        binding = FragmentScooterSharingBinding.inflate(layoutInflater)
 
-        startRideButton = view.findViewById(R.id.start_ride_button)
-        editRideButton = view.findViewById(R.id.edit_ride_button)
-        listRidesButton = view.findViewById(R.id.list_rides_button)
+        startRideButton = binding.startRideButton
+        editRideButton = binding.editRideButton
+        listRidesButton = binding.listRidesButton
 
         startRideButton.setOnClickListener {
             val intent = Intent(activity, StartRideActivity::class.java)
@@ -55,6 +57,6 @@ class ScooterSharingFragment : Fragment() {
             }
         }
 
-        return view
+        return binding.root
     }
 }

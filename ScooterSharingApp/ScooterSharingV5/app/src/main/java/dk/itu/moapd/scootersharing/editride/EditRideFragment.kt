@@ -8,13 +8,17 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.android.material.textfield.TextInputLayout
 import dk.itu.moapd.scootersharing.R
+import dk.itu.moapd.scootersharing.databinding.FragmentEditRideBinding
 
 class EditRideFragment : Fragment() {
 
-    private lateinit var infoText: EditText
-    private lateinit var nameText: EditText
-    private lateinit var whereText: EditText
+    private lateinit var binding: FragmentEditRideBinding
+
+    private lateinit var infoText: TextInputLayout
+    private lateinit var nameText: TextInputLayout
+    private lateinit var whereText: TextInputLayout
 
     private lateinit var updateButton: Button
 
@@ -27,19 +31,19 @@ class EditRideFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_edit_ride, container, false)
+        binding = FragmentEditRideBinding.inflate(layoutInflater)
 
-        infoText = view.findViewById(R.id.info_text)
-        nameText = view.findViewById(R.id.name_text)
-        whereText = view.findViewById(R.id.where_text)
-        updateButton = view.findViewById(R.id.update_button)
+        infoText = binding.infoText
+        nameText = binding.nameText
+        whereText = binding.whereText
+        updateButton = binding.updateButton
 
         updateButton.setOnClickListener {
-            if (nameText.text.isNotEmpty()
-                && whereText.text.isNotEmpty()
+            if (nameText.editText!!.text.isNotEmpty()
+                && whereText.editText!!.text.isNotEmpty()
             ) {
-                val name = nameText.text.toString().trim()
-                val where = whereText.text.toString().trim()
+                val name = nameText.editText!!.text.toString().trim()
+                val where = whereText.editText!!.text.toString().trim()
                 val isUpdated = EditRideActivity.ridesDB.updateScooter(name, where)
 
                 if(isUpdated)
@@ -51,10 +55,10 @@ class EditRideFragment : Fragment() {
             }
         }
 
-        return view
+        return binding.root
     }
 
     private fun updateUI() {
-        infoText.setText(EditRideActivity.ridesDB.getLastScooterInfo())
+        infoText.editText!!.setText(EditRideActivity.ridesDB.getLastScooterInfo())
     }
 }

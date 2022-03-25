@@ -3,10 +3,12 @@ package dk.itu.moapd.scootersharing.editride
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import dk.itu.moapd.scootersharing.R
+import dk.itu.moapd.scootersharing.databinding.ActivityEditRideBinding
 import dk.itu.moapd.scootersharing.model.RidesDB
 
 class EditRideActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityEditRideBinding
 
     companion object {
         lateinit var ridesDB: RidesDB
@@ -14,18 +16,20 @@ class EditRideActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_ride)
+        val binding = ActivityEditRideBinding.inflate(layoutInflater)
         ridesDB = RidesDB.get(this)
 
-        val startRideFragment = supportFragmentManager.findFragmentById(R.id.fragment_edit_ride_container)
+        val startRideFragment = supportFragmentManager.findFragmentById(binding.fragmentEditRideContainer.id)
 
         if(startRideFragment == null) {
             val fragment = EditRideFragment()
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragment_edit_ride_container, fragment)
+                .add(binding.fragmentEditRideContainer.id, fragment)
                 .commit()
         }
+
+        setContentView(binding.root)
     }
 
 }

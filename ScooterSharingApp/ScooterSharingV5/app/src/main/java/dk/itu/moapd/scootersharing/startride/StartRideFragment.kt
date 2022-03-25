@@ -9,13 +9,15 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputLayout
 import dk.itu.moapd.scootersharing.R
+import dk.itu.moapd.scootersharing.databinding.FragmentStartRideBinding
 import dk.itu.moapd.scootersharing.startride.StartRideActivity.Companion.ridesDB
 
 class StartRideFragment : Fragment() {
 
-    private lateinit var infoText: EditText
-    private lateinit var nameText: EditText
-    private lateinit var whereText: EditText
+    private lateinit var binding: FragmentStartRideBinding
+    private lateinit var infoText: TextInputLayout
+    private lateinit var nameText: TextInputLayout
+    private lateinit var whereText: TextInputLayout
 
     private lateinit var addButton: Button
 
@@ -28,27 +30,27 @@ class StartRideFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_start_ride, container, false)
+        val binding = FragmentStartRideBinding.inflate(layoutInflater)
 
-        infoText = view.findViewById(R.id.info_text)
-        nameText = view.findViewById(R.id.name_text)
-        whereText = view.findViewById(R.id.where_text)
-        addButton = view.findViewById(R.id.add_button)
+        infoText = binding.infoText
+        nameText = binding.nameText
+        whereText = binding.whereText
+        addButton = binding.addButton
 
         addButton.setOnClickListener {
-            if (nameText.text.isNotEmpty()
-                && whereText.text.isNotEmpty()) {
+            if (nameText.editText!!.text.isNotEmpty()
+                && whereText.editText!!.text.isNotEmpty()) {
                 ridesDB.addScooter(
-                    nameText.text.toString().trim(),
-                    whereText.text.toString().trim())
+                    nameText.editText!!.text.toString().trim(),
+                    whereText.editText!!.text.toString().trim())
                 updateUI()
             }
         }
 
-        return view
+        return binding.root
     }
 
     private fun updateUI() {
-        infoText.setText(ridesDB.getLastScooterInfo())
+        infoText.editText!!.setText(ridesDB.getLastScooterInfo())
     }
 }

@@ -9,12 +9,14 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import dk.itu.moapd.scootersharing.R
 import dk.itu.moapd.scootersharing.model.Scooter
 import dk.itu.moapd.scootersharing.ScooterSharingActivity.Companion.ridesDB
+import dk.itu.moapd.scootersharing.databinding.FragmentRideListBinding
+import dk.itu.moapd.scootersharing.databinding.ListItemRideBinding
 
 class RideListFragment : Fragment() {
 
+    private lateinit var binding: FragmentRideListBinding
     private lateinit var rideRecyclerView: RecyclerView
     private lateinit var adapter: RideAdapter
 
@@ -27,18 +29,22 @@ class RideListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_ride_list, container, false)
-        rideRecyclerView =
-            view.findViewById(R.id.ride_recycler_view) as RecyclerView
+        val binding = FragmentRideListBinding.inflate(layoutInflater);
+        rideRecyclerView = binding.rideRecyclerView
         rideRecyclerView.layoutManager = LinearLayoutManager(context)
 
         adapter = RideAdapter()
         rideRecyclerView.adapter = adapter
 
-        return view
+        return binding.root;
     }
 
-    private inner class RideHolder(view: View) : RecyclerView.ViewHolder(view) {
+    override fun onStart() {
+        super.onStart()
+        adapter.notifyDataSetChanged()
+    }
+
+    private inner class RideHolder(binding: ListItemRideBinding) : RecyclerView.ViewHolder(binding.root) {
 
         init {
             itemView.setOnClickListener {
@@ -49,9 +55,9 @@ class RideListFragment : Fragment() {
 
         private lateinit var ride: Scooter
 
-        private val nameTextView: TextView = itemView.findViewById(R.id.ride_name)
-        private val whereTextView: TextView = itemView.findViewById(R.id.ride_where)
-        private val timestampTextView: TextView = itemView.findViewById(R.id.ride_timestamp)
+        private val nameTextView: TextView = binding.rideName
+        private val whereTextView: TextView = binding.rideWhere
+        private val timestampTextView: TextView = binding.rideTimestamp
 
         fun bind(ride: Scooter) {
             this.ride = ride
@@ -64,8 +70,7 @@ class RideListFragment : Fragment() {
     private inner class RideAdapter : RecyclerView.Adapter<RideHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RideHolder {
-            val view = layoutInflater.inflate(R.layout.list_item_ride, parent, false)
-            return RideHolder(view)
+            return RideHolder(ListItemRideBinding.inflate(layoutInflater))
         }
 
         override fun getItemCount() = ridesDB.getScooters().size
@@ -75,5 +80,4 @@ class RideListFragment : Fragment() {
             holder.bind(ride)
         }
     }
-
 }
