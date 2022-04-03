@@ -1,4 +1,4 @@
-package dk.itu.moapd.scootersharing
+package dk.itu.moapd.scootersharing.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

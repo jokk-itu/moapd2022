@@ -12,7 +12,7 @@ data class Scooter(
     @ColumnInfo val name: String,
     @ColumnInfo val where: String
 ) {
-    override fun toString(): String {
+    override fun toString() : String {
         return "From ${readableTimestamp()}: $name is placed at $where"
     }
 

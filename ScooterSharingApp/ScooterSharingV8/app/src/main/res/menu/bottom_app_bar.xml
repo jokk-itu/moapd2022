@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- MAPS -->
+
+
+    <!-- SCOOTERS -->
+    <item
+        android:id="@+id/scooters"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="@string/scooters"
+        app:showAsAction="ifRoom" />
+
+    <!-- ACCOUNT -->
+    <item
+    android:id="@+id/account"
+    android:title="@string/account"
+    android:icon="@drawable/account"
+    app:showAsAction="ifRoom" />
+</menu>

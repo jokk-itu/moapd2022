@@ -9,8 +9,8 @@ interface ScooterDao {
     fun getAll(): LiveData<List<Scooter>>
 
     @Insert
-    fun insert(scooter: Scooter)
+    suspend fun insert(scooter: Scooter)
 
     @Update
-    fun update(scooter: Scooter)
+    suspend fun update(scooter: Scooter)
 }

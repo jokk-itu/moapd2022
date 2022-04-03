@@ -10,20 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ScooterSharing">
         <activity
-            android:name=".login.LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".editride.EditRideActivity"
-            android:exported="false" />
-        <activity
-            android:name=".startride.StartRideActivity"
-            android:exported="false" />
-        <activity
             android:name=".ScooterSharingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

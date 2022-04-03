@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/signInFragment">
+
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="dk.itu.moapd.scootersharing.user.SignInFragment"
+        android:label="fragment_signin"
+        tools:layout="@layout/fragment_signin" >
+        <action
+            android:id="@+id/action_signInFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_scooters"
+            app:destination="@+id/scooters"/>
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="dk.itu.moapd.scootersharing.user.SignUpFragment"
+        android:label="fragment_signup"
+        tools:layout="@layout/fragment_signup">
+        <action
+            android:id="@+id/action_signUpFragment_to_signInFragment"
+            app:destination="@id/signInFragment"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/account"
+        android:name="dk.itu.moapd.scootersharing.user.AccountFragment"
+        android:label="fragment_account"
+        tools:layout="@layout/fragment_account">
+        <action
+            android:id="@+id/action_accountFragment_to_signInFragment"
+            app:destination="@+id/signInFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/scooters"
+        android:name="dk.itu.moapd.scootersharing.ScooterListFragment"
+        android:label="fragment_scooterlist"
+        tools:layout="@layout/fragment_scooter_list"/>
+</navigation>
