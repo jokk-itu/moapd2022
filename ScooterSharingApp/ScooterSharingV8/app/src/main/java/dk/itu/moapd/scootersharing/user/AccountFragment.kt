@@ -60,7 +60,7 @@ class AccountFragment : Fragment() {
         fun bind(ride: Ride) {
             this.ride = ride
             nameTextView.text = ride.scooterId.toString()
-            whereTextView.text = ride.startWhere
+            whereTextView.text = ""
             timestampTextView.text = Calendar.getInstance().time.toString()
         }
     }

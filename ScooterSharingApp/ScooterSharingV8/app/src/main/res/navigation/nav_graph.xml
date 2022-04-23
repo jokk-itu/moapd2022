@@ -41,4 +41,9 @@
         android:name="dk.itu.moapd.scootersharing.ScooterListFragment"
         android:label="fragment_scooterlist"
         tools:layout="@layout/fragment_scooter_list"/>
+    <fragment
+        android:id="@+id/maps"
+        android:name="dk.itu.moapd.scootersharing.MapFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_map"/>
 </navigation>

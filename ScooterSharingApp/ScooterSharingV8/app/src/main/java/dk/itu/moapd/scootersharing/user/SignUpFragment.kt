@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import dk.itu.moapd.scootersharing.R
 import dk.itu.moapd.scootersharing.databinding.FragmentSignupBinding
 
@@ -25,7 +26,6 @@ class SignUpFragment : Fragment() {
         binding.signupButton.setOnClickListener {
             val email = binding.emailTextField.editText!!.text.trim().toString()
             val password = binding.passwordTextField.editText!!.text.trim().toString()
-
             auth
                 .createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {

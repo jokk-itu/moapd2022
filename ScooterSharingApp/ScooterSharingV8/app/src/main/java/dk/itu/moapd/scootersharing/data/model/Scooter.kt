@@ -10,10 +10,11 @@ import java.util.*
 data class Scooter(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo val name: String,
-    @ColumnInfo val where: String
+    @ColumnInfo val lat: Double,
+    @ColumnInfo val lon: Double
 ) {
     override fun toString() : String {
-        return "From ${readableTimestamp()}: $name is placed at $where"
+        return "From ${readableTimestamp()}: $name is placed at ($lat, $lon)"
     }
 
     fun readableTimestamp() : String {

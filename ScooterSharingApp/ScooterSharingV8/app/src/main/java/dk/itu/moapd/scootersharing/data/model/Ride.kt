@@ -5,13 +5,23 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
 
+/**
+ * (startLat, startLon) is the starting location of the ride
+ * (currentLat, currentLon) is the current location of the ride (is equal to start on start, is equal to end on end)
+ * (endLat, endLon) is the ended location of the ride
+ */
+
 @Entity(tableName = "rides")
 data class Ride(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo val userId: String,
     @ColumnInfo val scooterId: Long,
-    @ColumnInfo val startWhere: String,
+    @ColumnInfo val startLat: Double,
+    @ColumnInfo val startLon: Double,
+    @ColumnInfo val currentLat: Double,
+    @ColumnInfo val currentLon: Double,
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP") val start: Long,
-    @ColumnInfo val endWhere: String?,
+    @ColumnInfo val endLat: Double?,
+    @ColumnInfo val endLon: Double?,
     @ColumnInfo val end: Long?
     )

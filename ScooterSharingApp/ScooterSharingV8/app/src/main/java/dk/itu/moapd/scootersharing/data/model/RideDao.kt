@@ -11,7 +11,7 @@ interface RideDao {
     @Query("SELECT * FROM rides WHERE userId LIKE :userId ORDER BY id LIMIT 1 OFFSET :offset")
     suspend fun getFromUser(userId: String, offset: Int): Ride
 
-    @Query("SELECT * FROM rides WHERE userId LIKE :userId AND endWhere NOT NULL AND `end` NOT NULL LIMIT 1")
+    @Query("SELECT * FROM rides WHERE userId LIKE :userId AND endLat NOT NULL AND endLon NOT NULL AND `end` NOT NULL LIMIT 1")
     suspend fun getCurrentRide(userId: String): Ride
 
     @Query("SELECT COUNT(*) FROM rides WHERE userId LIKE :userId")

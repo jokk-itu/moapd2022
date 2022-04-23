@@ -17,15 +17,17 @@ abstract class AppDatabase : RoomDatabase() {
 
         private val MIGRATION_1_2 = object: Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("INSERT INTO scooters (name, `where`) VALUES('Ninja', 'Frederiksvaerk')")
-                database.execSQL("INSERT INTO scooters (name, `where`) VALUES('Voi', 'Koebenhavn')")
-                database.execSQL("INSERT INTO rides (userId, scooterId, startWhere, start) VALUES('3pr5qghZioZqMqBYfGQHvE3Goj03', 0, 'Frederiksvaerk', CURRENT_TIMESTAMP)")
-                database.execSQL("INSERT INTO rides (userId, scooterId, startWhere, start, endWhere, `end`) VALUES('3pr5qghZioZqMqBYfGQHvE3Goj03', 1, 'Koebenhavn', CURRENT_TIMESTAMP, 'Ballerup', CURRENT_TIMESTAMP)")
-                database.execSQL("INSERT INTO rides (userId, scooterId, startWhere, start, endWhere, `end`) VALUES('3pr5qghZioZqMqBYfGQHvE3Goj03', 1, 'Koebenhavn', CURRENT_TIMESTAMP, 'Frederiksvaerk', CURRENT_TIMESTAMP)")
-                database.execSQL("INSERT INTO rides (userId, scooterId, startWhere, start, endWhere, `end`) VALUES('3pr5qghZioZqMqBYfGQHvE3Goj03', 0, 'Koebenhavn', CURRENT_TIMESTAMP, 'Frederiksvaerk', CURRENT_TIMESTAMP)")
+                //SCOOTERS
+                database.execSQL("INSERT INTO scooters (name, lat, lon) VALUES('Ninja', 55.9318627, 12.2998268)")
+                database.execSQL("INSERT INTO scooters (name, lat, lon) VALUES('Voi', 55.9318627,12.2998270)")
+
+                //RIDES
+                database.execSQL("INSERT INTO rides (userId, scooterId, startLat, startLon, currentLat, currentLon, start) VALUES('3pr5qghZioZqMqBYfGQHvE3Goj03', 0, 55.9318630, 12.2998268, 55.9318700, 12.2998268, CURRENT_TIMESTAMP)")
+                database.execSQL("INSERT INTO rides (userId, scooterId, startLat, startLon, currentLat, currentLon, start, endLat, endLon, `end`) VALUES('3pr5qghZioZqMqBYfGQHvE3Goj03', 1, 55.9318630, 12.2998268, 55.9318400, 12.2998268, CURRENT_TIMESTAMP, 55.9318400, 12.2998268, CURRENT_TIMESTAMP)")
+                database.execSQL("INSERT INTO rides (userId, scooterId, startLat, startLon, currentLat, currentLon, start, endLat, endLon, `end`) VALUES('3pr5qghZioZqMqBYfGQHvE3Goj03', 1, 55.9318630, 12.2998273, 55.9318630, 12.2998300, CURRENT_TIMESTAMP, 55.9318630, 12.2998300, CURRENT_TIMESTAMP)")
+                database.execSQL("INSERT INTO rides (userId, scooterId, startLat, startLon, currentLat, currentLon, start, endLat, endLon, `end`) VALUES('3pr5qghZioZqMqBYfGQHvE3Goj03', 0, 55.9318630, 12.2998278, 55.9318630, 12.2998400, CURRENT_TIMESTAMP, 55.9318630, 12.2998400, CURRENT_TIMESTAMP)")
             }
         }
-
 
         @Volatile
         private var INSTANCE: AppDatabase? = null
@@ -37,9 +39,9 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "scootersharing"
                 )
+                    .fallbackToDestructiveMigration()
                     .allowMainThreadQueries()
                     .addMigrations(MIGRATION_1_2)
-                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

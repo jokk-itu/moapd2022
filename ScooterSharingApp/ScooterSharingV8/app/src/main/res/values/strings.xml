@@ -14,4 +14,5 @@
     <string name="maps">Maps</string>
     <string name="email_error">Email is wrong</string>
     <string name="password_error">Password is wrong</string>
+    <string name="location_event">LocationEvent</string>
 </resources>

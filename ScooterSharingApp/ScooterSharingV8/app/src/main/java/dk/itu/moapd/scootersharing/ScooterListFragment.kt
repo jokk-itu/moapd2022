@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dk.itu.moapd.scootersharing.data.model.Scooter
 import dk.itu.moapd.scootersharing.databinding.FragmentScooterListBinding
 import dk.itu.moapd.scootersharing.databinding.ListItemScooterBinding
+import dk.itu.moapd.scootersharing.viewmodels.LocationViewModel
 import dk.itu.moapd.scootersharing.viewmodels.ScooterViewModel
 
 class ScooterListFragment : Fragment() {
@@ -19,6 +20,7 @@ class ScooterListFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ScooterAdapter
     private lateinit var scooterViewModel: ScooterViewModel
+    private lateinit var locationViewModel: LocationViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,11 +28,12 @@ class ScooterListFragment : Fragment() {
     ): View {
         binding = FragmentScooterListBinding.inflate(layoutInflater)
         scooterViewModel = ViewModelProvider(this)[ScooterViewModel::class.java]
+        locationViewModel = ViewModelProvider(this)[LocationViewModel::class.java]
         recyclerView = binding.scooterRecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(context)
         scooterViewModel.getAll().observe(viewLifecycleOwner) {
             adapter = ScooterAdapter(it)
             recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(context)
         }
         return binding.root
     }
@@ -43,7 +46,7 @@ class ScooterListFragment : Fragment() {
         fun bind(scooter: Scooter) {
             this.scooter = scooter
             binding.name.text = scooter.name
-            binding.where.text = scooter.where
+            binding.where.text = locationViewModel.toLocation(scooter.lat, scooter.lon) ?: "Address is unavailable"
         }
     }
 
