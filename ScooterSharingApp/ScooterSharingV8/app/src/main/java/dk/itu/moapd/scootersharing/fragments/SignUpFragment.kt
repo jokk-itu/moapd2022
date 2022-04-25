@@ -1,33 +1,33 @@
-package dk.itu.moapd.scootersharing.user
+package dk.itu.moapd.scootersharing.fragments
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import dk.itu.moapd.scootersharing.R
-import dk.itu.moapd.scootersharing.databinding.FragmentSigninBinding
+import dk.itu.moapd.scootersharing.databinding.FragmentSignupBinding
 
-
-class SignInFragment : Fragment() {
+class SignUpFragment : Fragment() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private lateinit var binding: FragmentSigninBinding
+    private lateinit var binding: FragmentSignupBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentSigninBinding.inflate(layoutInflater)
-        binding.signinButton.setOnClickListener {
+        binding = FragmentSignupBinding.inflate(layoutInflater)
+
+        binding.signupButton.setOnClickListener {
             val email = binding.emailTextField.editText!!.text.trim().toString()
             val password = binding.passwordTextField.editText!!.text.trim().toString()
             auth
-                .signInWithEmailAndPassword(email, password)
+                .createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    val action = SignInFragmentDirections.actionSignInFragmentToScooters()
+                    val action = SignUpFragmentDirections.actionSignUpFragmentToSignInFragment()
                     binding.root.findNavController().navigate(action)
                 }
                 .addOnFailureListener {
@@ -35,10 +35,7 @@ class SignInFragment : Fragment() {
                     binding.passwordTextField.error = getString(R.string.password_error)
                 }
         }
-        binding.signupButton.setOnClickListener {
-            val action = SignInFragmentDirections.actionSignInFragmentToSignUpFragment()
-            binding.root.findNavController().navigate(action)
-        }
+
         return binding.root
     }
 }

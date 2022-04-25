@@ -1,11 +1,9 @@
-package dk.itu.moapd.scootersharing
+package dk.itu.moapd.scootersharing.services
 
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.os.*
-import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
 import java.util.concurrent.TimeUnit
 

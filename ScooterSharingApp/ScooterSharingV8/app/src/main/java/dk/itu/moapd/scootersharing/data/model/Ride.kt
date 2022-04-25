@@ -13,15 +13,15 @@ import java.util.*
 
 @Entity(tableName = "rides")
 data class Ride(
-    @PrimaryKey(autoGenerate = true) val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo val userId: String,
     @ColumnInfo val scooterId: Long,
     @ColumnInfo val startLat: Double,
     @ColumnInfo val startLon: Double,
     @ColumnInfo val currentLat: Double,
     @ColumnInfo val currentLon: Double,
-    @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP") val start: Long,
-    @ColumnInfo val endLat: Double?,
-    @ColumnInfo val endLon: Double?,
-    @ColumnInfo val end: Long?
+    @ColumnInfo val start: Long,
+    @ColumnInfo val endLat: Double? = null,
+    @ColumnInfo val endLon: Double? = null,
+    @ColumnInfo val end: Long? = null
     )

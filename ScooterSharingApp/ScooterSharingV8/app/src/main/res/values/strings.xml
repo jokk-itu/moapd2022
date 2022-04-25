@@ -15,4 +15,9 @@
     <string name="email_error">Email is wrong</string>
     <string name="password_error">Password is wrong</string>
     <string name="location_event">LocationEvent</string>
+    <string name="take_photo">Take photo</string>
+    <string name="start_ride_event">StartRideEvent</string>
+    <string name="end_ride_event">EndRideEvent</string>
+    <string name="end_ride">End Ride</string>
+    <string name="start_ride">Start Ride</string>
 </resources>

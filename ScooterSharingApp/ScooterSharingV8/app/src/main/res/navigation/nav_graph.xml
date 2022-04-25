@@ -5,9 +5,10 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/signInFragment">
 
+    <!-- GENERAL FRAGMENTS -->
     <fragment
         android:id="@+id/signInFragment"
-        android:name="dk.itu.moapd.scootersharing.user.SignInFragment"
+        android:name="dk.itu.moapd.scootersharing.fragments.SignInFragment"
         android:label="fragment_signin"
         tools:layout="@layout/fragment_signin" >
         <action
@@ -19,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
-        android:name="dk.itu.moapd.scootersharing.user.SignUpFragment"
+        android:name="dk.itu.moapd.scootersharing.fragments.SignUpFragment"
         android:label="fragment_signup"
         tools:layout="@layout/fragment_signup">
         <action
@@ -28,22 +29,53 @@
             />
     </fragment>
     <fragment
+        android:id="@+id/scanFragment"
+        android:name="dk.itu.moapd.scootersharing.fragments.ScanFragment"
+        android:label="fragment_scan"
+        tools:layout="@layout/fragment_scan">
+        <action
+            android:id="@+id/action_scanFragment_to_scooters"
+            app:destination="@+id/scooters"/>
+        <action
+            android:id="@+id/action_scanFragment_to_account"
+            app:destination="@+id/account"/>
+    </fragment>
+
+
+    <!-- BOTTOM NAV FRAGMENTS -->
+    <fragment
         android:id="@+id/account"
-        android:name="dk.itu.moapd.scootersharing.user.AccountFragment"
+        android:name="dk.itu.moapd.scootersharing.fragments.AccountFragment"
         android:label="fragment_account"
         tools:layout="@layout/fragment_account">
         <action
             android:id="@+id/action_accountFragment_to_signInFragment"
             app:destination="@+id/signInFragment"/>
+        <action
+            android:id="@+id/action_accountFragment_to_scanFragment"
+            app:destination="@id/scanFragment">
+            <argument
+                android:name="broadcast"
+                app:argType="string"/>
+        </action>
     </fragment>
     <fragment
         android:id="@+id/scooters"
-        android:name="dk.itu.moapd.scootersharing.ScooterListFragment"
+        android:name="dk.itu.moapd.scootersharing.fragments.ScooterListFragment"
         android:label="fragment_scooterlist"
-        tools:layout="@layout/fragment_scooter_list"/>
+        tools:layout="@layout/fragment_scooter_list">
+        <action
+            android:id="@+id/action_scooterFragment_to_scanFragment"
+            app:destination="@+id/scanFragment">
+            <argument
+                android:name="broadcast"
+                app:argType="string" />
+        </action>
+    </fragment>
     <fragment
         android:id="@+id/maps"
-        android:name="dk.itu.moapd.scootersharing.MapFragment"
+        android:name="dk.itu.moapd.scootersharing.fragments.MapFragment"
         android:label="fragment_maps"
-        tools:layout="@layout/fragment_map"/>
+        tools:layout="@layout/fragment_map">
+    </fragment>
 </navigation>

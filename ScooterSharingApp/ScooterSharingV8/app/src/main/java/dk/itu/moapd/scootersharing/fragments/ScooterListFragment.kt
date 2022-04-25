@@ -1,4 +1,4 @@
-package dk.itu.moapd.scootersharing
+package dk.itu.moapd.scootersharing.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dk.itu.moapd.scootersharing.R
 import dk.itu.moapd.scootersharing.data.model.Scooter
 import dk.itu.moapd.scootersharing.databinding.FragmentScooterListBinding
 import dk.itu.moapd.scootersharing.databinding.ListItemScooterBinding
@@ -40,6 +42,14 @@ class ScooterListFragment : Fragment() {
 
     private inner class ScooterHolder(private val binding: ListItemScooterBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.startRide.setOnClickListener {
+                val argument = R.string.start_ride_event.toString()
+                val action = ScooterListFragmentDirections.actionScooterFragmentToScanFragment(argument)
+                binding.root.findNavController().navigate(action)
+            }
+        }
 
         lateinit var scooter: Scooter
 

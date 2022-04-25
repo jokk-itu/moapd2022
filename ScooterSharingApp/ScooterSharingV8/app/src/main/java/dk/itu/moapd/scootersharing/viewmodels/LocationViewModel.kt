@@ -12,12 +12,7 @@ import java.util.*
 
 class LocationViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val location = MutableLiveData<Location>()
     private val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
-
-    fun getLocation() = location
-
-    fun updateLocation(location: Location) { this.location.value = location }
 
     fun toLocation(latitude: Double, longitude: Double) : String? {
         val stringBuilder = StringBuilder()

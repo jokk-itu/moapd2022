@@ -35,4 +35,8 @@ class RideViewModel(application: Application) : AndroidViewModel(application) {
             db.rideDao().update(ride)
         }
     }
+
+    suspend fun getCurrentRide() = db.rideDao().getCurrentRide(auth.currentUser!!.uid)
+
+    fun getLiveCurrentRide() = db.rideDao().getLiveCurrentRide(auth.currentUser!!.uid)
 }

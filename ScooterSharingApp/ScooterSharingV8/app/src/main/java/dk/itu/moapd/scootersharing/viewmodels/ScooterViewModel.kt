@@ -10,7 +10,7 @@ class ScooterViewModel(application: Application) : AndroidViewModel(application)
 
     private val db: AppDatabase = AppDatabase.getDatabase(application)
     private val scooters = db.scooterDao().getAll()
-    private val availableScooters = db.scooterDao().getAll()
+    private val availableScooters = db.scooterDao().getAllAvailable()
 
     fun getAll() : LiveData<List<Scooter>> {
         return scooters
@@ -19,4 +19,8 @@ class ScooterViewModel(application: Application) : AndroidViewModel(application)
     fun getAvailableScooters() : LiveData<List<Scooter>> {
         return availableScooters
     }
+
+    fun isScooterAvailable(scooterId: Long) = db.scooterDao().getAvailableScooter(scooterId) == 1
+
+    fun getScooter(scooterId: Long) = db.scooterDao().getScooter(scooterId)
 }
