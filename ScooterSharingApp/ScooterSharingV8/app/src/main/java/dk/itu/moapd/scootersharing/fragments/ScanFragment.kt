@@ -13,8 +13,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -78,10 +76,9 @@ class ScanFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentScanBinding.inflate(layoutInflater)
-        binding.imageCaptureButton.setOnClickListener { takePhoto() }
         outputDirectory = getOutputDirectory()
-        rideViewModel = ViewModelProvider(this)[RideViewModel::class.java]
-        scooterViewModel = ViewModelProvider(this)[ScooterViewModel::class.java]
+        rideViewModel = ViewModelProvider(requireActivity())[RideViewModel::class.java]
+        scooterViewModel = ViewModelProvider(requireActivity())[ScooterViewModel::class.java]
         cameraExecutor = Executors.newSingleThreadExecutor()
         if (areAllPermissionsGranted())
             startCamera()
@@ -151,70 +148,6 @@ class ScanFragment : Fragment() {
                 }
             }
         )*/
-        imageCapture.takePicture(
-            ContextCompat.getMainExecutor(requireContext()),
-            object : ImageCapture.OnImageCapturedCallback() {
-                @SuppressLint("UnsafeOptInUsageError")
-                override fun onCaptureSuccess(image: ImageProxy) {
-                    super.onCaptureSuccess(image)
-                    val mediaImage = image.image
-                    if (mediaImage == null) {
-                        image.close()
-                        return
-                    }
-                    val options = BarcodeScannerOptions.Builder()
-                        .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-                        .build()
-                    val scanner = BarcodeScanning.getClient(options)
-                    val result = scanner.process(
-                        InputImage.fromMediaImage(
-                            mediaImage,
-                            image.imageInfo.rotationDegrees
-                        )
-                    )
-                        .addOnSuccessListener { barcodes ->
-                            for (barcode in barcodes) {
-                                when (barcode.valueType) {
-                                    Barcode.TYPE_TEXT -> {
-                                        val scooterId = barcode.displayValue?.toLongOrNull()
-                                        val intent = Intent(broadcast)
-                                        intent.putExtra("scooterId", scooterId)
-                                        LocalBroadcastManager.getInstance(requireContext())
-                                            .sendBroadcast(intent)
-                                        val action =
-                                            ScanFragmentDirections.actionScanFragmentToAccount()
-                                        binding.root.findNavController().navigate(action)
-                                    }
-                                }
-                            }
-                        }
-                        .addOnFailureListener {
-                            Log.e(
-                                ScanFragment::class.java.canonicalName,
-                                "Error analyzing: $it.message"
-                            )
-                            Toast.makeText(
-                                requireContext(),
-                                "QRCode is not valid",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                        .addOnCompleteListener {
-                            image.close()
-                        }
-                    runBlocking { result }
-                }
-
-                override fun onError(exception: ImageCaptureException) {
-                    super.onError(exception)
-                    Toast.makeText(
-                        requireContext(),
-                        "Error: ${exception.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        )
     }
 
     private fun startCamera() {
@@ -230,13 +163,67 @@ class ScanFragment : Fragment() {
             imageCapture = ImageCapture.Builder()
                 .build()
 
+            val imageAnalyzer = ImageAnalysis.Builder()
+                .build()
+                .also { imageAnalysis ->
+                    imageAnalysis.setAnalyzer(cameraExecutor,
+                        object : ImageAnalysis.Analyzer {
+                            @SuppressLint("UnsafeOptInUsageError")
+                            override fun analyze(imageProxy: ImageProxy) {
+                                val mediaImage = imageProxy.image ?: return
+
+                                val image = InputImage.fromMediaImage(
+                                    mediaImage,
+                                    imageProxy.imageInfo.rotationDegrees
+                                )
+                                val options = BarcodeScannerOptions.Builder()
+                                    .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
+                                    .build()
+                                val scanner = BarcodeScanning.getClient(options)
+                                val result = scanner.process(
+                                    InputImage.fromMediaImage(
+                                        mediaImage,
+                                        image.rotationDegrees
+                                    )
+                                ).addOnSuccessListener { barcodes ->
+                                    if (barcodes.isEmpty()) {
+                                        return@addOnSuccessListener
+                                    }
+                                    val barcode = barcodes[0]
+                                    when (barcode.valueType) {
+                                        Barcode.TYPE_TEXT -> {
+                                            val scooterId =
+                                                barcode.displayValue?.toLongOrNull()
+                                            val intent = Intent(broadcast)
+                                            intent.putExtra("scooterId", scooterId)
+                                            LocalBroadcastManager.getInstance(requireContext())
+                                                .sendBroadcast(intent)
+                                            binding.root.findNavController().popBackStack()
+                                        }
+                                    }
+                                }
+                                    .addOnFailureListener {
+                                        Log.e(
+                                            ScanFragment::class.java.canonicalName,
+                                            "Error analyzing: $it.message"
+                                        )
+                                    }
+                                    .addOnCompleteListener {
+                                        imageProxy.close()
+                                    }
+                                runBlocking { result }
+                            }
+                        }
+                    )
+                }
+
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector,
-                    preview, imageCapture
+                    preview, imageCapture, imageAnalyzer
                 )
             } catch (exc: Exception) {
                 Log.e(ScanFragment::class.java.canonicalName, "Use case binding failed", exc)

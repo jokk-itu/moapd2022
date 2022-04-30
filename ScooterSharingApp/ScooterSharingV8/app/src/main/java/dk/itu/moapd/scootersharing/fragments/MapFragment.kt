@@ -30,7 +30,6 @@ class MapFragment : Fragment(), OnMapsSdkInitializedCallback {
 
     private lateinit var binding: FragmentMapBinding
     private lateinit var scooterViewModel: ScooterViewModel
-    private lateinit var map: GoogleMap
     private var currentLocation: Location? = null
     private val locationReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -62,7 +61,7 @@ class MapFragment : Fragment(), OnMapsSdkInitializedCallback {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMapBinding.inflate(layoutInflater)
-        scooterViewModel = ViewModelProvider(this)[ScooterViewModel::class.java]
+        scooterViewModel = ViewModelProvider(requireActivity())[ScooterViewModel::class.java]
         return binding.root
     }
 
@@ -74,7 +73,6 @@ class MapFragment : Fragment(), OnMapsSdkInitializedCallback {
 
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback {
-        map = it
         it.mapType = GoogleMap.MAP_TYPE_NORMAL
         val isLocationPermissionsCheck = isLocationPermissionsChecked()
         it.isMyLocationEnabled = isLocationPermissionsCheck
@@ -82,16 +80,6 @@ class MapFragment : Fragment(), OnMapsSdkInitializedCallback {
         it.uiSettings.isZoomControlsEnabled = true
         setConstraintsOnMap(it)
         addAvailableScooterMarkers(it)
-        while (currentLocation == null) { /* Empty on purpose */
-        }
-        it.moveCamera(
-            CameraUpdateFactory.newLatLng(
-                LatLng(
-                    currentLocation!!.latitude,
-                    currentLocation!!.longitude
-                )
-            )
-        )
     }
 
     private fun setConstraintsOnMap(map: GoogleMap) {

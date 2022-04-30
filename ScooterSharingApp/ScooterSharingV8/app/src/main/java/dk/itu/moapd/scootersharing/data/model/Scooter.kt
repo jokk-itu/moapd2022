@@ -8,10 +8,11 @@ import java.util.*
 
 @Entity(tableName = "scooters")
 data class Scooter(
-    @PrimaryKey(autoGenerate = true) val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     @ColumnInfo val name: String,
     @ColumnInfo val lat: Double,
-    @ColumnInfo val lon: Double
+    @ColumnInfo val lon: Double,
+    @ColumnInfo val isAvailable: Boolean
 ) {
     override fun toString() : String {
         return "From ${readableTimestamp()}: $name is placed at ($lat, $lon)"

@@ -5,13 +5,13 @@ import androidx.room.*
 
 @Dao
 interface ScooterDao {
-    @Query("SELECT * FROM scooters")
+    @Query("SELECT * FROM scooters ORDER BY id")
     fun getAll(): LiveData<List<Scooter>>
 
-    @Query("SELECT DISTINCT(s.id), s.lat, s.lon, s.name FROM scooters s INNER JOIN rides r ON r.scooterId = s.id WHERE r.`end` IS NOT NULL")
+    @Query("SELECT * FROM scooters WHERE isAvailable = 1 ORDER BY id")
     fun getAllAvailable(): LiveData<List<Scooter>>
 
-    @Query("SELECT COUNT(*) FROM scooters s INNER JOIN rides r ON r.scooterId = s.id WHERE s.id = :scooterId AND r.`end` IS NULL")
+    @Query("SELECT COUNT(*) FROM scooters s WHERE s.isAvailable = 1 AND s.id = :scooterId")
     fun getAvailableScooter(scooterId : Long) : Int
 
     @Query("SELECT * FROM scooters WHERE id = :scooterId LIMIT 1")
@@ -20,6 +20,6 @@ interface ScooterDao {
     @Insert
     suspend fun insert(scooter: Scooter)
 
-    @Update
-    suspend fun update(scooter: Scooter)
+    @Query("UPDATE scooters SET lat = :latitude, lon = :longitude, isAvailable = :isAvailable WHERE id = :scooterId")
+    suspend fun update(scooterId: Long, latitude: Double, longitude: Double, isAvailable: Boolean)
 }

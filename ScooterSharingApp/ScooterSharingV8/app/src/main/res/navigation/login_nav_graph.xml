@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scooter_sharing_nav_graph"
+    app:startDestination="@id/signinFragment">
+
+    <!-- GENERAL FRAGMENTS -->
+    <fragment
+        android:id="@+id/signinFragment"
+        android:name="dk.itu.moapd.scootersharing.fragments.SignInFragment"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in">
+        <action
+            android:id="@+id/action_signinFragment_to_signupFragment"
+            app:destination="@+id/signupFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/signupFragment"
+        android:name="dk.itu.moapd.scootersharing.fragments.SignUpFragment"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_sign_up" />
+</navigation>

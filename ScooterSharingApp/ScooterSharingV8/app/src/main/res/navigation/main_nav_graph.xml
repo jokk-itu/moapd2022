@@ -2,32 +2,10 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
-    app:startDestination="@id/signInFragment">
+    android:id="@+id/scooter_sharing_nav_graph"
+    app:startDestination="@id/scooters">
 
     <!-- GENERAL FRAGMENTS -->
-    <fragment
-        android:id="@+id/signInFragment"
-        android:name="dk.itu.moapd.scootersharing.fragments.SignInFragment"
-        android:label="fragment_signin"
-        tools:layout="@layout/fragment_signin" >
-        <action
-            android:id="@+id/action_signInFragment_to_signUpFragment"
-            app:destination="@id/signUpFragment" />
-        <action
-            android:id="@+id/action_signInFragment_to_scooters"
-            app:destination="@+id/scooters"/>
-    </fragment>
-    <fragment
-        android:id="@+id/signUpFragment"
-        android:name="dk.itu.moapd.scootersharing.fragments.SignUpFragment"
-        android:label="fragment_signup"
-        tools:layout="@layout/fragment_signup">
-        <action
-            android:id="@+id/action_signUpFragment_to_signInFragment"
-            app:destination="@id/signInFragment"
-            />
-    </fragment>
     <fragment
         android:id="@+id/scanFragment"
         android:name="dk.itu.moapd.scootersharing.fragments.ScanFragment"
@@ -40,7 +18,6 @@
             android:id="@+id/action_scanFragment_to_account"
             app:destination="@+id/account"/>
     </fragment>
-
 
     <!-- BOTTOM NAV FRAGMENTS -->
     <fragment

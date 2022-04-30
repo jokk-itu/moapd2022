@@ -1,4 +1,4 @@
-package dk.itu.moapd.scootersharing.services
+package dk.itu.moapd.scootersharing.services.location
 
 import android.annotation.SuppressLint
 import android.app.Service

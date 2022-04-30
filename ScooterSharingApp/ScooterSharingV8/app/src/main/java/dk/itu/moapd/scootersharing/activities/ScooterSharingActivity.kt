@@ -1,4 +1,4 @@
-package dk.itu.moapd.scootersharing
+package dk.itu.moapd.scootersharing.activities
 
 import android.content.*
 import android.content.pm.PackageManager
@@ -12,40 +12,51 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.auth.FirebaseAuth
+import dk.itu.moapd.scootersharing.R
+import dk.itu.moapd.scootersharing.activities.login.LoginActivity
 import dk.itu.moapd.scootersharing.data.model.Ride
 import dk.itu.moapd.scootersharing.databinding.ActivityScooterSharingBinding
-import dk.itu.moapd.scootersharing.services.LocationListener
-import dk.itu.moapd.scootersharing.services.LocationService
+import dk.itu.moapd.scootersharing.services.location.LocationListener
+import dk.itu.moapd.scootersharing.services.location.LocationService
 import dk.itu.moapd.scootersharing.viewmodels.RideViewModel
 import dk.itu.moapd.scootersharing.viewmodels.ScooterViewModel
-import kotlinx.coroutines.runBlocking
+
+/**
+ * TEST START RIDE
+ * TEST END RIDE
+ *
+ * UI TESTS
+ */
 
 class ScooterSharingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityScooterSharingBinding
-    private lateinit var auth: FirebaseAuth
     private lateinit var rideViewModel: RideViewModel
     private lateinit var scooterViewModel: ScooterViewModel
     private lateinit var locationService: LocationService
     private var currentLocation: Location? = null
     private var isBound: Boolean = false
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
             Thread {
-                val ride = runBlocking { rideViewModel.getCurrentRide() } ?: return@Thread
+                if (auth.currentUser == null)
+                    return@Thread
 
-                val updatedRide = Ride(
-                    id = ride.id,
-                    scooterId = ride.scooterId,
-                    userId = ride.userId,
-                    start = ride.start,
-                    startLat = ride.startLat,
-                    startLon = ride.startLon,
-                    currentLat = location.latitude,
-                    currentLon = location.longitude,
+                val ride = rideViewModel.getCurrentRide() ?: return@Thread
+                rideViewModel.updateLocation(
+                    ride.id,
+                    currentLocation!!.latitude,
+                    currentLocation!!.longitude
                 )
-                rideViewModel.updateRide(updatedRide)
+                scooterViewModel.updateScooter(
+                    ride.scooterId,
+                    location.latitude,
+                    location.longitude,
+                    false
+                )
             }.start()
+
             currentLocation = location
             val intent = Intent(R.string.location_event.toString())
             intent.putExtra("latitude", location.latitude)
@@ -53,20 +64,28 @@ class ScooterSharingActivity : AppCompatActivity() {
             LocalBroadcastManager.getInstance(this@ScooterSharingActivity).sendBroadcast(intent)
         }
     }
+
     private val startRideReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val scooterId = intent?.getLongExtra("scooterId", 0)
+            val scooterId = intent?.getLongExtra("scooterId", -1L)
 
-            if (scooterId == null || scooterId == 0L)
-                Toast.makeText(this@ScooterSharingActivity, "QRCode is invalid", Toast.LENGTH_LONG)
-                    .show()
+            if (scooterId == null || scooterId == -1L) {
+                Toast.makeText(
+                    this@ScooterSharingActivity,
+                    "QRCode is not correct",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
 
-            if (!scooterViewModel.isScooterAvailable(scooterId!!))
+            if (!scooterViewModel.isScooterAvailable(scooterId)) {
                 Toast.makeText(
                     this@ScooterSharingActivity,
                     "Scooter is not available",
-                    Toast.LENGTH_LONG
+                    Toast.LENGTH_SHORT
                 ).show()
+                return
+            }
 
             while (currentLocation == null) {
                 //Empty on purpose
@@ -81,37 +100,61 @@ class ScooterSharingActivity : AppCompatActivity() {
                 currentLat = currentLocation!!.latitude,
                 currentLon = currentLocation!!.longitude
             )
-            rideViewModel.insertRide(ride)
+            rideViewModel.startRide(ride)
+            scooterViewModel.updateScooter(
+                scooterId,
+                currentLocation!!.latitude,
+                currentLocation!!.longitude,
+                false
+            )
             Toast.makeText(this@ScooterSharingActivity, "Ride started", Toast.LENGTH_SHORT).show()
         }
     }
     private val endRideReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val scooterId = intent?.getLongExtra("scooterId", 0)
+            val scooterId = intent?.getLongExtra("scooterId", -1L)
 
-            if (scooterId == null || scooterId == 0L)
-                Toast.makeText(this@ScooterSharingActivity, "QRCode is invalid", Toast.LENGTH_LONG)
-                    .show()
+            if (scooterId == null || scooterId == -1L) {
+                Toast.makeText(
+                    this@ScooterSharingActivity,
+                    "QRCode is not correct",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
 
             while (currentLocation == null) {
                 //Empty on purpose
             }
 
-            val ride = runBlocking { rideViewModel.getCurrentRide() } ?: return
-            val updatedRide = Ride(
-                id = ride.id,
-                scooterId = ride.scooterId,
-                userId = ride.userId,
-                start = ride.start,
-                startLat = ride.startLat,
-                startLon = ride.startLon,
-                currentLat = currentLocation!!.latitude,
-                currentLon = currentLocation!!.longitude,
-                end = System.currentTimeMillis(),
-                endLat = currentLocation!!.latitude,
-                endLon = currentLocation!!.longitude
+            val ride = rideViewModel.getCurrentRide()
+
+            if (ride == null) {
+                Toast.makeText(
+                    this@ScooterSharingActivity,
+                    "You don't have a current ride",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+
+            if (ride.scooterId != scooterId) {
+                Toast.makeText(
+                    this@ScooterSharingActivity,
+                    "The given QRCode does not correspond to the currentride",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+
+            rideViewModel.endRide(ride.id, currentLocation!!.latitude, currentLocation!!.longitude)
+            scooterViewModel.updateScooter(
+                ride.id,
+                currentLocation!!.latitude,
+                currentLocation!!.longitude,
+                true
             )
-            rideViewModel.updateRide(updatedRide)
+            Toast.makeText(this@ScooterSharingActivity, "Ride ended", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -144,6 +187,9 @@ class ScooterSharingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(checkUserSession())
+            return
+
         binding = ActivityScooterSharingBinding.inflate(layoutInflater)
         rideViewModel = ViewModelProvider(this)[RideViewModel::class.java]
         scooterViewModel = ViewModelProvider(this)[ScooterViewModel::class.java]
@@ -155,21 +201,27 @@ class ScooterSharingActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(endRideReceiver, IntentFilter(R.string.end_ride_event.toString()))
 
-        auth = FirebaseAuth.getInstance()
         binding.topNav.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.signOut -> {
                     auth.signOut()
-                    binding.navHostFragment.getFragment<NavHostFragment>().navController.navigate(
-                        R.id.signInFragment
-                    )
+                    checkUserSession()
                     true
                 }
                 else -> false
             }
         }
-
         requestUserPermissions()
+    }
+
+    private fun checkUserSession() : Boolean {
+        if (auth.currentUser == null) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            return true
+        }
+        return false
     }
 
     private fun setupBottomNav() {

@@ -5,27 +5,27 @@ import androidx.room.*
 
 @Dao
 interface RideDao {
-    @Query("SELECT * FROM rides WHERE userId LIKE :userId")
+    @Query("SELECT * FROM rides WHERE userId LIKE :userId ORDER BY id")
     fun getAllFromUser(userId: String): LiveData<List<Ride>>
 
     @Query("SELECT * FROM rides WHERE userId LIKE :userId ORDER BY id LIMIT 1 OFFSET :offset")
-    suspend fun getFromUser(userId: String, offset: Int): Ride
+    fun getFromUser(userId: String, offset: Int): Ride
 
-    @Query("SELECT * FROM rides WHERE userId LIKE :userId AND endLat NOT NULL AND endLon NOT NULL AND `end` NOT NULL LIMIT 1")
-    suspend fun getCurrentRide(userId: String): Ride?
+    @Query("SELECT * FROM rides WHERE userId LIKE :userId AND endLat IS NULL AND endLon IS NULL AND `end` IS NULL LIMIT 1")
+    fun getCurrentRide(userId: String): Ride?
 
-    @Query("SELECT * FROM rides WHERE userId LIKE :userId AND endLat NOT NULL AND endLon NOT NULL AND `end` NOT NULL LIMIT 1")
+    @Query("SELECT * FROM rides WHERE userId LIKE :userId AND endLat IS NULL AND endLon IS NULL AND `end` IS NULL LIMIT 1")
     fun getLiveCurrentRide(userId: String): LiveData<Ride?>
 
     @Query("SELECT COUNT(*) FROM rides WHERE userId LIKE :userId")
-    suspend fun getCountFromUser(userId: String) : Int
+    fun getCountFromUser(userId: String) : Int
 
     @Insert
     suspend fun insert(ride: Ride)
 
-    @Update
-    suspend fun update(ride: Ride)
+    @Query("UPDATE rides SET endLat = :endLat, endLon = :endLon, `end` = :end, currentLat = :endLat, currentLon = currentLon WHERE id = :id")
+    suspend fun update(id: Long, endLat: Double, endLon: Double, end: Long)
 
-    @Delete
-    suspend fun delete(ride: Ride)
+    @Query("UPDATE rides SET currentLat = :currentLat, currentLon = :currentLon WHERE id = :id")
+    suspend fun update(id: Long, currentLat: Double, currentLon: Double)
 }
