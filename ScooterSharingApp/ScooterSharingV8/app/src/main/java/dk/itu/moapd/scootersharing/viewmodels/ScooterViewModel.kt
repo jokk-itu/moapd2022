@@ -15,21 +15,29 @@ class ScooterViewModel(application: Application) : AndroidViewModel(application)
     private val scooters = db.scooterDao().getAll()
     private val availableScooters = db.scooterDao().getAllAvailable()
 
-    fun getAll() : LiveData<List<Scooter>> {
-        return scooters
-    }
-
     fun getAvailableScooters() : LiveData<List<Scooter>> {
         return availableScooters
     }
 
-    fun isScooterAvailable(scooterId: Long) = db.scooterDao().getAvailableScooter(scooterId) == 1
-
     fun getScooter(scooterId: Long) = db.scooterDao().getScooter(scooterId)
 
-    fun updateScooter(scooterId: Long, latitude: Double, longitude: Double, isAvailable: Boolean) {
+    fun isScooterAvailable(scooterId: Long) = db.scooterDao().getAvailableScooter(scooterId) == 1
+
+    fun updateLocation(scooterId: Long, latitude: Double, longitude: Double) {
         viewModelScope.launch(Dispatchers.IO) {
-            db.scooterDao().update(scooterId, latitude, longitude, isAvailable)
+            db.scooterDao().update(scooterId, latitude, longitude)
+        }
+    }
+
+    fun updateAvailability(scooterId: Long, isAvailable: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.scooterDao().update(scooterId, isAvailable)
+        }
+    }
+
+    fun updateBattery(scooterId: Long, battery: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            db.scooterDao().update(scooterId, battery)
         }
     }
 }

@@ -7,14 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import dk.itu.moapd.scootersharing.R
 import dk.itu.moapd.scootersharing.data.model.Ride
 import dk.itu.moapd.scootersharing.databinding.FragmentAccountBinding
 import dk.itu.moapd.scootersharing.databinding.ListItemRideBinding
 import dk.itu.moapd.scootersharing.viewmodels.LocationViewModel
 import dk.itu.moapd.scootersharing.viewmodels.RideViewModel
+import dk.itu.moapd.scootersharing.viewmodels.ScooterViewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AccountFragment : Fragment() {
 
@@ -24,6 +29,7 @@ class AccountFragment : Fragment() {
     private lateinit var adapter: RideAdapter
     private lateinit var rideViewModel: RideViewModel
     private lateinit var locationViewModel: LocationViewModel
+    private lateinit var scooterViewModel: ScooterViewModel
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
@@ -37,6 +43,7 @@ class AccountFragment : Fragment() {
 
         rideViewModel = ViewModelProvider(requireActivity())[RideViewModel::class.java]
         locationViewModel = ViewModelProvider(requireActivity())[LocationViewModel::class.java]
+        scooterViewModel = ViewModelProvider(requireActivity())[ScooterViewModel::class.java]
 
         recyclerView = binding.rideRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -49,21 +56,43 @@ class AccountFragment : Fragment() {
         return binding.root
     }
 
-    private inner class RideHolder(private val binding: ListItemRideBinding) :
+    inner class RideHolder(private val binding: ListItemRideBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         lateinit var ride: Ride
 
+        fun getDate(time: Long) : String {
+            val format = "dd/MM/yyyy"
+            val formatter = SimpleDateFormat(format, Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = time
+            return formatter.format(calendar.time)
+        }
+
+        @SuppressLint("SetTextI18n")
         fun bind(ride: Ride) {
+            val scooter = scooterViewModel.getScooter(ride.scooterId)
             this.ride = ride
-            binding.rideName.text = ride.scooterId.toString()
-            binding.rideWhere.text = locationViewModel.toLocation(ride.currentLat, ride.currentLon)
-            binding.rideTimestamp.text = ride.start.toString()
-            binding.rideEnd.isEnabled = ride.end == null && ride.endLat == null && ride.endLon == null
+            val startDate = getDate(ride.start)
+            val endDate = if(ride.end == null) "Not ended" else getDate(ride.end)
+            val price = if(ride.price == null) "Not ended" else ride.price.toString()
+            binding.rideName.text = scooter.name
+            binding.rideWhere.text = locationViewModel.toAddress(scooter.lat, scooter.lon)
+            binding.rideTimestamp.text = "Start: $startDate, End: $endDate"
+            binding.rideEnd.isEnabled = ride.end == null && ride.endLat == null && ride.endLon == null && ride.price == null
+            binding.ridePrice.text = "Cost: $price"
+            if(binding.rideEnd.isEnabled) {
+                binding.rideEnd.setOnClickListener {
+                    val argument = R.string.end_ride_event.toString()
+                    val action =
+                        AccountFragmentDirections.actionAccountFragmentToScanFragment(argument)
+                    binding.root.findNavController().navigate(action)
+                }
+            }
         }
     }
 
-    private inner class RideAdapter(private val rides: List<Ride>) :
+    inner class RideAdapter(private val rides: List<Ride>) :
         RecyclerView.Adapter<RideHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RideHolder {

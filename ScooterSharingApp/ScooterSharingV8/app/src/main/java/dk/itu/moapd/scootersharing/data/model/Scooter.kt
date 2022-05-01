@@ -12,7 +12,9 @@ data class Scooter(
     @ColumnInfo val name: String,
     @ColumnInfo val lat: Double,
     @ColumnInfo val lon: Double,
-    @ColumnInfo val isAvailable: Boolean
+    @ColumnInfo val isAvailable: Boolean,
+    @ColumnInfo val battery: Int,
+    @ColumnInfo val picture: String
 ) {
     override fun toString() : String {
         return "From ${readableTimestamp()}: $name is placed at ($lat, $lon)"

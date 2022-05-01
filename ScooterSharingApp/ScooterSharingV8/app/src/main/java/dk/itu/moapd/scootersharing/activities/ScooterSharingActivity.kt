@@ -44,16 +44,10 @@ class ScooterSharingActivity : AppCompatActivity() {
                     return@Thread
 
                 val ride = rideViewModel.getCurrentRide() ?: return@Thread
-                rideViewModel.updateLocation(
-                    ride.id,
-                    currentLocation!!.latitude,
-                    currentLocation!!.longitude
-                )
-                scooterViewModel.updateScooter(
+                scooterViewModel.updateLocation(
                     ride.scooterId,
                     location.latitude,
-                    location.longitude,
-                    false
+                    location.longitude
                 )
             }.start()
 
@@ -96,17 +90,12 @@ class ScooterSharingActivity : AppCompatActivity() {
                 userId = auth.currentUser!!.uid,
                 start = System.currentTimeMillis(),
                 startLat = currentLocation!!.latitude,
-                startLon = currentLocation!!.longitude,
-                currentLat = currentLocation!!.latitude,
-                currentLon = currentLocation!!.longitude
+                startLon = currentLocation!!.longitude
             )
             rideViewModel.startRide(ride)
-            scooterViewModel.updateScooter(
+            scooterViewModel.updateAvailability(
                 scooterId,
-                currentLocation!!.latitude,
-                currentLocation!!.longitude,
-                false
-            )
+                false)
             Toast.makeText(this@ScooterSharingActivity, "Ride started", Toast.LENGTH_SHORT).show()
         }
     }
@@ -147,13 +136,12 @@ class ScooterSharingActivity : AppCompatActivity() {
                 return
             }
 
-            rideViewModel.endRide(ride.id, currentLocation!!.latitude, currentLocation!!.longitude)
-            scooterViewModel.updateScooter(
-                ride.id,
-                currentLocation!!.latitude,
-                currentLocation!!.longitude,
-                true
-            )
+            val scooter = scooterViewModel.getScooter(scooterId)
+            val updateBattery = scooter.battery - 2
+            val price = (System.currentTimeMillis() - ride.start / 100000).toDouble()
+            rideViewModel.endRide(ride.id, currentLocation!!.latitude, currentLocation!!.longitude, price)
+            scooterViewModel.updateBattery(scooterId, updateBattery)
+            scooterViewModel.updateAvailability(scooterId, true)
             Toast.makeText(this@ScooterSharingActivity, "Ride ended", Toast.LENGTH_SHORT).show()
         }
     }

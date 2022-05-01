@@ -1,42 +1,45 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center">
+    android:layout_margin="8dp"
+    android:padding="8dp"
+    android:gravity="center">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:gravity="center">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/picture"
+            android:layout_width="200dp"
+            android:layout_height="300dp"
+            android:scaleType="fitXY" />
+
+        <TextView
+            android:id="@+id/name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_gravity="center">
+            android:layout_height="match_parent" />
 
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/where"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-            <TextView
-                android:id="@+id/where"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/battery"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-            <Button
-                android:id="@+id/startRide"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/start_ride"/>
+        <Button
+            android:id="@+id/startRide"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/start_ride" />
 
-        </LinearLayout>
+    </LinearLayout>
 
-    </com.google.android.material.card.MaterialCardView>
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

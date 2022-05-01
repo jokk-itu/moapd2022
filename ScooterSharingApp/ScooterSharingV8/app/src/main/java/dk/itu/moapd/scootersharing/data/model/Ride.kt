@@ -3,7 +3,6 @@ package dk.itu.moapd.scootersharing.data.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.*
 
 /**
  * (startLat, startLon) is the starting location of the ride
@@ -18,10 +17,9 @@ data class Ride(
     @ColumnInfo val scooterId: Long,
     @ColumnInfo val startLat: Double,
     @ColumnInfo val startLon: Double,
-    @ColumnInfo val currentLat: Double,
-    @ColumnInfo val currentLon: Double,
     @ColumnInfo val start: Long,
     @ColumnInfo val endLat: Double? = null,
     @ColumnInfo val endLon: Double? = null,
-    @ColumnInfo val end: Long? = null
+    @ColumnInfo val end: Long? = null,
+    @ColumnInfo val price: Double? = null
     )

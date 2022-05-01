@@ -23,6 +23,8 @@ class SignInFragment : Fragment() {
     ): View {
         binding = FragmentSignInBinding.inflate(layoutInflater)
         binding.signinButton.setOnClickListener {
+            binding.signinButton.isEnabled = false
+            binding.signupButton.isEnabled = false
             val email = binding.emailTextField.editText!!.text.trim().toString()
             val password = binding.passwordTextField.editText!!.text.trim().toString()
             auth
@@ -33,6 +35,8 @@ class SignInFragment : Fragment() {
                 .addOnFailureListener {
                     binding.emailTextField.error = getString(R.string.email_error)
                     binding.passwordTextField.error = getString(R.string.password_error)
+                    binding.signinButton.isEnabled = true
+                    binding.signupButton.isEnabled = true
                 }
         }
         binding.signupButton.setOnClickListener {

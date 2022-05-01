@@ -26,9 +26,6 @@
         android:label="fragment_account"
         tools:layout="@layout/fragment_account">
         <action
-            android:id="@+id/action_accountFragment_to_signInFragment"
-            app:destination="@+id/signInFragment"/>
-        <action
             android:id="@+id/action_accountFragment_to_scanFragment"
             app:destination="@id/scanFragment">
             <argument

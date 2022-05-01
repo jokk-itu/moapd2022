@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -76,6 +77,7 @@ class ScanFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentScanBinding.inflate(layoutInflater)
+        binding.cameraView.scaleType = PreviewView.ScaleType.FILL_CENTER
         outputDirectory = getOutputDirectory()
         rideViewModel = ViewModelProvider(requireActivity())[RideViewModel::class.java]
         scooterViewModel = ViewModelProvider(requireActivity())[ScooterViewModel::class.java]
@@ -127,14 +129,12 @@ class ScanFragment : Fragment() {
             )
             .build()
 
-        //Save the image to MediaStore
-        /*imageCapture.takePicture(
+        imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(requireContext()),
             object : ImageCapture.OnImageSavedCallback {
                 override fun
                         onImageSaved(output: ImageCapture.OutputFileResults) {
-
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     Log.d(ScanFragment::class.java.canonicalName, msg)
                 }
@@ -147,7 +147,7 @@ class ScanFragment : Fragment() {
                     )
                 }
             }
-        )*/
+        )
     }
 
     private fun startCamera() {
@@ -192,6 +192,7 @@ class ScanFragment : Fragment() {
                                     val barcode = barcodes[0]
                                     when (barcode.valueType) {
                                         Barcode.TYPE_TEXT -> {
+                                            takePhoto()
                                             val scooterId =
                                                 barcode.displayValue?.toLongOrNull()
                                             val intent = Intent(broadcast)

@@ -2,19 +2,16 @@ package dk.itu.moapd.scootersharing.viewmodels
 
 import android.app.Application
 import android.location.Geocoder
-import android.location.Location
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import java.io.IOException
-import java.lang.StringBuilder
 import java.util.*
 
 class LocationViewModel(application: Application) : AndroidViewModel(application) {
 
     private val geocoder = Geocoder(application.applicationContext, Locale.getDefault())
 
-    fun toLocation(latitude: Double, longitude: Double) : String? {
+    fun toAddress(latitude: Double, longitude: Double) : String? {
         val stringBuilder = StringBuilder()
         try {
             val addresses = geocoder.getFromLocation(latitude, longitude, 1)

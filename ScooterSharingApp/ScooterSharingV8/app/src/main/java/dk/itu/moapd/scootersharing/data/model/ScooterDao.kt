@@ -1,7 +1,9 @@
 package dk.itu.moapd.scootersharing.data.model
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 
 @Dao
 interface ScooterDao {
@@ -20,6 +22,12 @@ interface ScooterDao {
     @Insert
     suspend fun insert(scooter: Scooter)
 
-    @Query("UPDATE scooters SET lat = :latitude, lon = :longitude, isAvailable = :isAvailable WHERE id = :scooterId")
-    suspend fun update(scooterId: Long, latitude: Double, longitude: Double, isAvailable: Boolean)
+    @Query("UPDATE scooters SET lat = :latitude, lon = :longitude WHERE id = :scooterId")
+    suspend fun update(scooterId: Long, latitude: Double, longitude: Double)
+
+    @Query("UPDATE scooters SET isAvailable = :isAvailable WHERE id = :scooterId")
+    suspend fun update(scooterId: Long, isAvailable: Boolean)
+
+    @Query("UPDATE scooters SET battery = :battery WHERE id = :scooterId")
+    suspend fun update(scooterId: Long, battery: Int)
 }

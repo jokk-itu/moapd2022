@@ -28,19 +28,11 @@ class RideViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateLocation(rideId: Long, currentLat: Double, currentLon: Double) {
+    fun endRide(rideId: Long, endLat: Double, endLon: Double, price: Double) {
         viewModelScope.launch(Dispatchers.IO) {
-            db.rideDao().update(rideId, currentLat, currentLon)
-        }
-    }
-
-    fun endRide(rideId: Long, endLat: Double, endLon: Double) {
-        viewModelScope.launch(Dispatchers.IO) {
-            db.rideDao().update(rideId, endLat, endLon, System.currentTimeMillis())
+            db.rideDao().update(rideId, endLat, endLon, System.currentTimeMillis(), price)
         }
     }
 
     fun getCurrentRide() = db.rideDao().getCurrentRide(auth.currentUser!!.uid)
-
-    fun getLiveCurrentRide() = db.rideDao().getLiveCurrentRide(auth.currentUser!!.uid)
 }

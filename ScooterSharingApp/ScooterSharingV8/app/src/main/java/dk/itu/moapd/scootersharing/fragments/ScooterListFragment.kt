@@ -1,5 +1,6 @@
 package dk.itu.moapd.scootersharing.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -44,7 +45,7 @@ class ScooterListFragment : Fragment() {
         return binding.root
     }
 
-    private inner class ScooterHolder(
+    inner class ScooterHolder(
         private val binding: ListItemScooterBinding,
         private val disableStartRideButton: Boolean
     ) :
@@ -66,22 +67,24 @@ class ScooterListFragment : Fragment() {
 
         lateinit var scooter: Scooter
 
+        @SuppressLint("SetTextI18n")
         fun bind(scooter: Scooter) {
             this.scooter = scooter
+            binding.picture.setImageResource(resources.getIdentifier(scooter.picture, "drawable", requireActivity().packageName)) //imageView.setImageResource(R.drawable.my_image);
             binding.name.text = scooter.name
             binding.where.text =
-                locationViewModel.toLocation(scooter.lat, scooter.lon) ?: "Address is unavailable"
+                locationViewModel.toAddress(scooter.lat, scooter.lon) ?: "Address is unavailable"
             binding.startRide.isEnabled = !disableStartRideButton
+            binding.battery.text = "${scooter.battery}% power"
         }
     }
 
-    private inner class ScooterAdapter(private val scooters: List<Scooter>) :
+    inner class ScooterAdapter(private val scooters: List<Scooter>) :
         RecyclerView.Adapter<ScooterHolder>() {
-
-        private val hasCurrentRide: Boolean = rideViewModel.getCurrentRide() != null
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ScooterHolder {
             val binding = ListItemScooterBinding.inflate(layoutInflater)
+            val hasCurrentRide = rideViewModel.getCurrentRide() != null
             return ScooterHolder(binding, hasCurrentRide)
         }
 
