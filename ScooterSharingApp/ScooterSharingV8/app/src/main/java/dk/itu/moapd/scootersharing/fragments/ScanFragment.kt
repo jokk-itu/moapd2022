@@ -2,17 +2,21 @@ package dk.itu.moapd.scootersharing.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.ContentValues
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationManager
+import android.graphics.*
+import android.media.Image
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -30,9 +34,10 @@ import dk.itu.moapd.scootersharing.databinding.FragmentScanBinding
 import dk.itu.moapd.scootersharing.viewmodels.RideViewModel
 import dk.itu.moapd.scootersharing.viewmodels.ScooterViewModel
 import kotlinx.coroutines.runBlocking
+import java.io.ByteArrayOutputStream
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -45,30 +50,10 @@ class ScanFragment : Fragment() {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var outputDirectory: File
     private var imageCapture: ImageCapture? = null
-    private var currentLocation: Location? = null
-    private val locationReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val latitude = intent?.getDoubleExtra("latitude", 0f.toDouble())
-            val longitude = intent?.getDoubleExtra("longitude", 0f.toDouble())
-
-            if (latitude == null || latitude == 0f.toDouble())
-                return
-
-            if (longitude == null || longitude == 0f.toDouble())
-                return
-
-            val location = Location(LocationManager.GPS_PROVIDER)
-            location.latitude = latitude
-            location.longitude = longitude
-            currentLocation = location
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         broadcast = arguments?.get("broadcast").toString()
-        LocalBroadcastManager.getInstance(requireActivity())
-            .registerReceiver(locationReceiver, IntentFilter(R.string.location_event.toString()))
     }
 
     override fun onCreateView(
@@ -82,8 +67,17 @@ class ScanFragment : Fragment() {
         rideViewModel = ViewModelProvider(requireActivity())[RideViewModel::class.java]
         scooterViewModel = ViewModelProvider(requireActivity())[ScooterViewModel::class.java]
         cameraExecutor = Executors.newSingleThreadExecutor()
-        if (areAllPermissionsGranted())
+        if (isPermissionGranted())
             startCamera()
+        else {
+            Toast.makeText(
+                requireContext(),
+                "The camera is not allowed to be used",
+                Toast.LENGTH_SHORT
+            ).show()
+            askForPermission()
+            requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
+        }
 
         return binding.root
     }
@@ -102,52 +96,33 @@ class ScanFragment : Fragment() {
         cameraExecutor.shutdown()
     }
 
-    private fun areAllPermissionsGranted(): Boolean {
-        return arrayOf(Manifest.permission.CAMERA).all {
+    private fun isPermissionGranted(): Boolean {
+        return mutableListOf(Manifest.permission.CAMERA).apply {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+                add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+        }.all {
             ContextCompat.checkSelfPermission(
                 requireContext(), it
             ) == PackageManager.PERMISSION_GRANTED
         }
     }
 
-    private fun takePhoto() {
-        val imageCapture = imageCapture ?: return
-        val name = SimpleDateFormat("yy-MM-dd-HH-mm-ss-SSS", Locale.getDefault())
-            .format(System.currentTimeMillis())
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
-            }
-        }
-        val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(
-                requireActivity().contentResolver,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
-            )
-            .build()
-
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(requireContext()),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun
-                        onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Log.d(ScanFragment::class.java.canonicalName, msg)
-                }
-
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e(
-                        ScanFragment::class.java.canonicalName,
-                        "Photo capture failed: ${exc.message}",
-                        exc
-                    )
+    private fun askForPermission() {
+        val permissions = mutableListOf(Manifest.permission.CAMERA)
+            .apply {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+                    add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 }
             }
-        )
+
+        val permissionsToRequest = ArrayList<String>()
+        for (permission in permissions)
+            if (requireActivity().checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED)
+                permissionsToRequest.add(permission)
+
+        if (permissionsToRequest.size > 0)
+            requireActivity().requestPermissions(permissionsToRequest.toTypedArray(), 1100)
     }
 
     private fun startCamera() {
@@ -192,7 +167,7 @@ class ScanFragment : Fragment() {
                                     val barcode = barcodes[0]
                                     when (barcode.valueType) {
                                         Barcode.TYPE_TEXT -> {
-                                            takePhoto()
+                                            saveMediaToStorage(mediaImage.toBitmap())
                                             val scooterId =
                                                 barcode.displayValue?.toLongOrNull()
                                             val intent = Intent(broadcast)
@@ -200,6 +175,7 @@ class ScanFragment : Fragment() {
                                             LocalBroadcastManager.getInstance(requireContext())
                                                 .sendBroadcast(intent)
                                             binding.root.findNavController().popBackStack()
+                                            cameraProvider.unbindAll()
                                         }
                                     }
                                 }
@@ -230,5 +206,53 @@ class ScanFragment : Fragment() {
                 Log.e(ScanFragment::class.java.canonicalName, "Use case binding failed", exc)
             }
         }, ContextCompat.getMainExecutor(requireContext()))
+    }
+
+    fun saveMediaToStorage(bitmap: Bitmap) {
+        val filename = "${System.currentTimeMillis()}.jpg"
+        var fos: OutputStream? = null
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            context?.contentResolver?.also { resolver ->
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                }
+
+                val imageUri: Uri? =
+                    resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+                fos = imageUri?.let { resolver.openOutputStream(it) }
+            }
+        } else {
+            val imagesDir =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            val image = File(imagesDir, filename)
+            fos = FileOutputStream(image)
+        }
+
+        fos?.use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+        }
+    }
+
+    fun Image.toBitmap(): Bitmap {
+        val yBuffer = planes[0].buffer // Y
+        val vuBuffer = planes[2].buffer // VU
+
+        val ySize = yBuffer.remaining()
+        val vuSize = vuBuffer.remaining()
+
+        val nv21 = ByteArray(ySize + vuSize)
+
+        yBuffer.get(nv21, 0, ySize)
+        vuBuffer.get(nv21, ySize, vuSize)
+
+        val yuvImage = YuvImage(nv21, ImageFormat.NV21, this.width, this.height, null)
+        val out = ByteArrayOutputStream()
+        yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 50, out)
+        val imageBytes = out.toByteArray()
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
 }

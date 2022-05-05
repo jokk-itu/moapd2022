@@ -23,6 +23,7 @@ class SignUpFragment : Fragment() {
         binding = FragmentSignUpBinding.inflate(layoutInflater)
 
         binding.signupButton.setOnClickListener {
+            binding.signupButton.isEnabled = false
             val name = binding.nameTextField.editText!!.text.trim().toString()
             if(name.isBlank()) {
                 binding.nameTextField.error = getString(R.string.name_error)
@@ -40,6 +41,7 @@ class SignUpFragment : Fragment() {
                 .addOnFailureListener {
                     binding.emailTextField.error = getString(R.string.email_error)
                     binding.passwordTextField.error = getString(R.string.password_error)
+                    binding.signupButton.isEnabled = true
                 }
         }
 

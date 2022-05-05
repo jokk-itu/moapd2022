@@ -18,7 +18,7 @@ import java.io.IOException
 
 @SmallTest
 @RunWith(AndroidJUnit4::class)
-class RideTest {
+class RideDaoTest {
 
     private lateinit var rideDao: RideDao
     private lateinit var scooterDao: ScooterDao

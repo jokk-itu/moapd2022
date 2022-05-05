@@ -3,12 +3,8 @@ package dk.itu.moapd.scootersharing.data.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
-/**
- * (startLat, startLon) is the starting location of the ride
- * (currentLat, currentLon) is the current location of the ride (is equal to start on start, is equal to end on end)
- * (endLat, endLon) is the ended location of the ride
- */
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Entity(tableName = "rides")
 data class Ride(
@@ -22,4 +18,20 @@ data class Ride(
     @ColumnInfo val endLon: Double? = null,
     @ColumnInfo val end: Long? = null,
     @ColumnInfo val price: Double? = null
-    )
+    ) {
+
+    fun startToDate() : String {
+        val format = "yyyy:MM:dd"
+        val formatter = SimpleDateFormat(format, Locale.ENGLISH)
+        return formatter.format(start)
+    }
+
+    fun endToDate() : String? {
+        if(end == null)
+            return null
+
+        val format = "yyyy:MM:dd"
+        val formatter = SimpleDateFormat(format, Locale.getDefault())
+        return formatter.format(end)
+    }
+}

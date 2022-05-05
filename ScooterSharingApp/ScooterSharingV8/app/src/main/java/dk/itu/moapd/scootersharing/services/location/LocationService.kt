@@ -3,7 +3,10 @@ package dk.itu.moapd.scootersharing.services.location
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
-import android.os.*
+import android.os.Binder
+import android.os.HandlerThread
+import android.os.IBinder
+import android.os.Process
 import com.google.android.gms.location.*
 import java.util.concurrent.TimeUnit
 
@@ -21,7 +24,8 @@ class LocationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        val thread = HandlerThread(LocationService::class.qualifiedName, Process.THREAD_PRIORITY_BACKGROUND)
+        val thread =
+            HandlerThread(LocationService::class.qualifiedName, Process.THREAD_PRIORITY_BACKGROUND)
         thread.start()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         locationCallback = object : LocationCallback() {
@@ -33,7 +37,6 @@ class LocationService : Service() {
                 }
             }
         }
-
         startRequesting(thread)
     }
 
@@ -44,7 +47,11 @@ class LocationService : Service() {
             fastestInterval = TimeUnit.SECONDS.toMillis(2)
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, thread.looper)
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            thread.looper
+        )
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

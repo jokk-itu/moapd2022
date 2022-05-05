@@ -10,9 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Espresso.pressBack
+import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
@@ -24,18 +22,27 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.FlakyTest
 import androidx.test.filters.LargeTest
+import androidx.test.rule.GrantPermissionRule
 import com.google.firebase.auth.FirebaseAuth
 import dk.itu.moapd.scootersharing.activities.login.LoginActivity
 import dk.itu.moapd.scootersharing.fragments.ScooterListFragment
 import org.hamcrest.Matcher
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 class RentScooterTest {
+
+    @get :Rule
+    var permissionsRule: GrantPermissionRule = GrantPermissionRule.grant(
+        android.Manifest.permission.CAMERA,
+        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+        android.Manifest.permission.ACCESS_FINE_LOCATION
+    )
 
     private lateinit var scenario: ActivityScenario<LoginActivity>
     private lateinit var context: Context
@@ -61,7 +68,7 @@ class RentScooterTest {
             .perform(typeText("joachim@kelsen.nu"))
         onView(withId(R.id.password_editTextField))
             .perform(typeText("kelsen1234"))
-        Espresso.closeSoftKeyboard()
+        closeSoftKeyboard()
         onView(withId(R.id.signin_button)).perform(click())
         Thread.sleep(4000)
 
@@ -71,6 +78,14 @@ class RentScooterTest {
                 .perform(scrollToPosition<ScooterListFragment.ScooterHolder>(i))
                 .check(matches(hasDescendant(isNotEnabled())))
         }
+
+        //Logout
+        openActionBarOverflowOrOptionsMenu(context)
+        onView(withText("Sign out")).perform(click())
+        Thread.sleep(2000)
+
+        //Verify
+        assert(FirebaseAuth.getInstance().currentUser == null)
     }
 
     @Test
@@ -86,7 +101,7 @@ class RentScooterTest {
         onView(withId(R.id.name_editTextField)).perform(typeText("Hello there"))
         onView(withId(R.id.email_editTextField)).perform(typeText("joachim@man.nu"))
         onView(withId(R.id.password_editTextField)).perform(typeText("kelsen1234"))
-        Espresso.closeSoftKeyboard()
+        closeSoftKeyboard()
         onView(withId(R.id.signup_button)).perform(click())
         Thread.sleep(4000)
 
@@ -144,7 +159,7 @@ class RentScooterTest {
         onView(withId(R.id.name_editTextField)).perform(typeText("Hello there"))
         onView(withId(R.id.email_editTextField)).perform(typeText("joachim@man.nu"))
         onView(withId(R.id.password_editTextField)).perform(typeText("kelsen1234"))
-        Espresso.closeSoftKeyboard()
+        closeSoftKeyboard()
         onView(withId(R.id.signup_button)).perform(click())
         Thread.sleep(4000)
 
@@ -197,7 +212,7 @@ class RentScooterTest {
         onView(withId(R.id.name_editTextField)).perform(typeText("Hello there"))
         onView(withId(R.id.email_editTextField)).perform(typeText("joachim@man.nu"))
         onView(withId(R.id.password_editTextField)).perform(typeText("kelsen1234"))
-        Espresso.closeSoftKeyboard()
+        closeSoftKeyboard()
         onView(withId(R.id.signup_button)).perform(click())
         Thread.sleep(4000)
 
@@ -250,7 +265,7 @@ class RentScooterTest {
         onView(withId(R.id.name_editTextField)).perform(typeText("Hello there"))
         onView(withId(R.id.email_editTextField)).perform(typeText("joachim@man.nu"))
         onView(withId(R.id.password_editTextField)).perform(typeText("kelsen1234"))
-        Espresso.closeSoftKeyboard()
+        closeSoftKeyboard()
         onView(withId(R.id.signup_button)).perform(click())
         Thread.sleep(4000)
 
@@ -282,16 +297,16 @@ class RentScooterTest {
         onView(withId(R.id.account)).perform(click())
         Thread.sleep(2000)
         onView(withId(R.id.ride_recycler_view)).check { view, noViewFoundException ->
-            if(view !is RecyclerView)
+            if (view !is RecyclerView)
                 throw noViewFoundException
 
-            if(view.adapter == null)
+            if (view.adapter == null)
                 throw noViewFoundException
 
-            for(i in 0..view.adapter!!.itemCount) {
+            for (i in 0..view.adapter!!.itemCount) {
                 val viewHolder = view.findViewHolderForAdapterPosition(i)
                 val endRideButton = viewHolder!!.itemView.findViewById<Button>(R.id.ride_end)
-                if(endRideButton.isEnabled) {
+                if (endRideButton.isEnabled) {
                     return@check
                 }
             }
@@ -331,7 +346,7 @@ class RentScooterTest {
         onView(withId(R.id.name_editTextField)).perform(typeText("Hello there"))
         onView(withId(R.id.email_editTextField)).perform(typeText("joachim@man.nu"))
         onView(withId(R.id.password_editTextField)).perform(typeText("kelsen1234"))
-        Espresso.closeSoftKeyboard()
+        closeSoftKeyboard()
         onView(withId(R.id.signup_button)).perform(click())
         Thread.sleep(4000)
 

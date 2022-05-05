@@ -22,7 +22,7 @@ import java.io.IOException
 
 @SmallTest
 @RunWith(AndroidJUnit4::class)
-class ScooterTest {
+class ScooterDaoTest {
     private lateinit var scooterDao: ScooterDao
     private lateinit var db: AppDatabase
     private lateinit var context: Context
@@ -144,7 +144,7 @@ class ScooterTest {
         )
         runBlocking { scooterDao.insert(scooter1) }
         runBlocking { scooterDao.insert(scooter2) }
-        scooterDao.getAllAvailable().observe(lifecycleOwner) { scooters ->
+        scooterDao.getAllAvailableLive().observe(lifecycleOwner) { scooters ->
             scooters.forEach {
                 assert(it.id == 1L)
             }

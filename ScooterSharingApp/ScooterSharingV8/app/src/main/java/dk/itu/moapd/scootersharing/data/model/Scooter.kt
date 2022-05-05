@@ -20,9 +20,9 @@ data class Scooter(
         return "From ${readableTimestamp()}: $name is placed at ($lat, $lon)"
     }
 
-    fun readableTimestamp() : String {
-        val date = Calendar.getInstance().time
-        val formatter = SimpleDateFormat("yyy:MM:DD:hh:mm:ss", Locale.ENGLISH)
+    private fun readableTimestamp() : String {
+        val date = Calendar.getInstance().timeInMillis
+        val formatter = SimpleDateFormat("yyyy:MM:DD", Locale.getDefault())
         return formatter.format(date)
     }
 }

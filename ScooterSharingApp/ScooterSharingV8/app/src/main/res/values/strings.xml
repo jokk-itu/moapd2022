@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">ScooterSharing</string>
     <string name="list_rides_button">List Rides</string>
-    <string name="dialog_delete_scooter_message">Delete Scooter?</string>
-    <string name="dialog_delete_scooter_yes">Yes</string>
-    <string name="dialog_delete_scooter_no">No</string>
+    <string name="dialog_start_ride_message">Start this ride?</string>
+    <string name="dialog_start_ride_yes">Yes</string>
+    <string name="dialog_start_ride_no">No</string>
     <string name="sign_out">Sign out</string>
     <string name="email">Email</string>
     <string name="signup">Signup</string>
@@ -22,4 +22,5 @@
     <string name="start_ride">Start Ride</string>
     <string name="name_error">Name cannot be empty</string>
     <string name="name">Name</string>
+    <string name="start_nearest_ride">Start Nearest Ride</string>
 </resources>

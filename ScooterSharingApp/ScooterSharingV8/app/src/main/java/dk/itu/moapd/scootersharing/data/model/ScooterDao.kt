@@ -7,13 +7,19 @@ import androidx.room.Query
 
 @Dao
 interface ScooterDao {
+    @Query("SELECT * FROM scooters")
+    fun getAll(): List<Scooter>
+
     @Query("SELECT * FROM scooters ORDER BY id")
-    fun getAll(): LiveData<List<Scooter>>
+    fun getAllLive(): LiveData<List<Scooter>>
 
-    @Query("SELECT * FROM scooters WHERE isAvailable = 1 ORDER BY id")
-    fun getAllAvailable(): LiveData<List<Scooter>>
+    @Query("SELECT * FROM scooters WHERE isAvailable = 1 AND battery > 0 ORDER BY id")
+    fun getAllAvailableLive(): LiveData<List<Scooter>>
 
-    @Query("SELECT COUNT(*) FROM scooters s WHERE s.isAvailable = 1 AND s.id = :scooterId")
+    @Query("SELECT * FROM scooters WHERE isAvailable = 1 AND battery > 0 ORDER BY id")
+    fun getAllAvailable(): List<Scooter>
+
+    @Query("SELECT COUNT(*) FROM scooters s WHERE s.isAvailable = 1 AND s.id = :scooterId AND battery > 0")
     fun getAvailableScooter(scooterId : Long) : Int
 
     @Query("SELECT * FROM scooters WHERE id = :scooterId LIMIT 1")

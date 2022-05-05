@@ -18,8 +18,6 @@ import dk.itu.moapd.scootersharing.databinding.ListItemRideBinding
 import dk.itu.moapd.scootersharing.viewmodels.LocationViewModel
 import dk.itu.moapd.scootersharing.viewmodels.RideViewModel
 import dk.itu.moapd.scootersharing.viewmodels.ScooterViewModel
-import java.text.SimpleDateFormat
-import java.util.*
 
 class AccountFragment : Fragment() {
 
@@ -61,27 +59,27 @@ class AccountFragment : Fragment() {
 
         lateinit var ride: Ride
 
-        fun getDate(time: Long) : String {
-            val format = "dd/MM/yyyy"
-            val formatter = SimpleDateFormat(format, Locale.getDefault())
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = time
-            return formatter.format(calendar.time)
-        }
-
         @SuppressLint("SetTextI18n")
         fun bind(ride: Ride) {
             val scooter = scooterViewModel.getScooter(ride.scooterId)
             this.ride = ride
-            val startDate = getDate(ride.start)
-            val endDate = if(ride.end == null) "Not ended" else getDate(ride.end)
-            val price = if(ride.price == null) "Not ended" else ride.price.toString()
+            val startDate = ride.startToDate()
+            val endDate = ride.endToDate() ?: "Not available"
+            val price = if (ride.price == null) "Not available" else ride.price.toString()
+            val startAddress =
+                locationViewModel.toAddress(ride.startLat, ride.startLon) ?: "Not available"
+            val endAddress = locationViewModel.toAddress(
+                ride.endLat ?: (-1f).toDouble(),
+                ride.endLon ?: (-1f).toDouble()
+            ) ?: "Not available"
             binding.rideName.text = scooter.name
-            binding.rideWhere.text = locationViewModel.toAddress(scooter.lat, scooter.lon)
+            binding.startAddress.text = "Start: $startAddress"
+            binding.endAddress.text = "End: $endAddress"
             binding.rideTimestamp.text = "Start: $startDate, End: $endDate"
-            binding.rideEnd.isEnabled = ride.end == null && ride.endLat == null && ride.endLon == null && ride.price == null
+            binding.rideEnd.isEnabled =
+                ride.end == null && ride.endLat == null && ride.endLon == null && ride.price == null
             binding.ridePrice.text = "Cost: $price"
-            if(binding.rideEnd.isEnabled) {
+            if (binding.rideEnd.isEnabled) {
                 binding.rideEnd.setOnClickListener {
                     val argument = R.string.end_ride_event.toString()
                     val action =

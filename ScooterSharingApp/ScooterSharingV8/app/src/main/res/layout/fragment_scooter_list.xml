@@ -7,6 +7,17 @@
     android:orientation="vertical"
     tools:context=".fragments.ScooterListFragment">
 
+    <Button
+        android:id="@+id/start_closest_ride_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="@string/start_nearest_ride"/>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="2dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/scooter_recycler_view"
         android:layout_width="wrap_content"

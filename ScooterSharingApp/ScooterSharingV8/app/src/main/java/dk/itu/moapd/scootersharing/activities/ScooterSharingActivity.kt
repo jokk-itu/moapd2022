@@ -1,8 +1,10 @@
 package dk.itu.moapd.scootersharing.activities
 
+import android.Manifest
 import android.content.*
 import android.content.pm.PackageManager
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.widget.Toast
@@ -20,13 +22,6 @@ import dk.itu.moapd.scootersharing.services.location.LocationListener
 import dk.itu.moapd.scootersharing.services.location.LocationService
 import dk.itu.moapd.scootersharing.viewmodels.RideViewModel
 import dk.itu.moapd.scootersharing.viewmodels.ScooterViewModel
-
-/**
- * TEST START RIDE
- * TEST END RIDE
- *
- * UI TESTS
- */
 
 class ScooterSharingActivity : AppCompatActivity() {
 
@@ -81,8 +76,18 @@ class ScooterSharingActivity : AppCompatActivity() {
                 return
             }
 
+            var retries = 6
             while (currentLocation == null) {
-                //Empty on purpose
+                if (retries == 0) {
+                    Toast.makeText(
+                        this@ScooterSharingActivity,
+                        "Enable location permissions",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return
+                }
+                Thread.sleep(1000)
+                retries--
             }
 
             val ride = Ride(
@@ -95,7 +100,8 @@ class ScooterSharingActivity : AppCompatActivity() {
             rideViewModel.startRide(ride)
             scooterViewModel.updateAvailability(
                 scooterId,
-                false)
+                false
+            )
             Toast.makeText(this@ScooterSharingActivity, "Ride started", Toast.LENGTH_SHORT).show()
         }
     }
@@ -112,8 +118,18 @@ class ScooterSharingActivity : AppCompatActivity() {
                 return
             }
 
+            var retries = 6
             while (currentLocation == null) {
-                //Empty on purpose
+                if (retries == 0) {
+                    Toast.makeText(
+                        this@ScooterSharingActivity,
+                        "Enable location permissions",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return
+                }
+                Thread.sleep(1000)
+                retries--
             }
 
             val ride = rideViewModel.getCurrentRide()
@@ -139,7 +155,12 @@ class ScooterSharingActivity : AppCompatActivity() {
             val scooter = scooterViewModel.getScooter(scooterId)
             val updateBattery = scooter.battery - 2
             val price = (System.currentTimeMillis() - ride.start / 100000).toDouble()
-            rideViewModel.endRide(ride.id, currentLocation!!.latitude, currentLocation!!.longitude, price)
+            rideViewModel.endRide(
+                ride.id,
+                currentLocation!!.latitude,
+                currentLocation!!.longitude,
+                price
+            )
             scooterViewModel.updateBattery(scooterId, updateBattery)
             scooterViewModel.updateAvailability(scooterId, true)
             Toast.makeText(this@ScooterSharingActivity, "Ride ended", Toast.LENGTH_SHORT).show()
@@ -162,20 +183,30 @@ class ScooterSharingActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        val intent = Intent(this, LocationService::class.java)
-        startService(intent)
-        bindService(intent, locationServiceConnection, BIND_AUTO_CREATE)
+
+        if (areLocationPermissionsSet()) {
+            val intent = Intent(this, LocationService::class.java)
+            startService(intent)
+            bindService(intent, locationServiceConnection, BIND_AUTO_CREATE)
+        }
+
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(startRideReceiver, IntentFilter(R.string.start_ride_event.toString()))
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(endRideReceiver, IntentFilter(R.string.end_ride_event.toString()))
     }
 
     override fun onStop() {
         super.onStop()
-        unbindService(locationServiceConnection)
-        isBound = false
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(startRideReceiver)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(endRideReceiver)
+        if (isBound)
+            unbindService(locationServiceConnection)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(checkUserSession())
+        if (checkUserSession())
             return
 
         binding = ActivityScooterSharingBinding.inflate(layoutInflater)
@@ -183,11 +214,6 @@ class ScooterSharingActivity : AppCompatActivity() {
         scooterViewModel = ViewModelProvider(this)[ScooterViewModel::class.java]
         setupBottomNav()
         setContentView(binding.root)
-
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(startRideReceiver, IntentFilter(R.string.start_ride_event.toString()))
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(endRideReceiver, IntentFilter(R.string.end_ride_event.toString()))
 
         binding.topNav.setOnMenuItemClickListener {
             when (it.itemId) {
@@ -202,7 +228,7 @@ class ScooterSharingActivity : AppCompatActivity() {
         requestUserPermissions()
     }
 
-    private fun checkUserSession() : Boolean {
+    private fun checkUserSession(): Boolean {
         if (auth.currentUser == null) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -218,12 +244,25 @@ class ScooterSharingActivity : AppCompatActivity() {
         )
     }
 
+    private fun areLocationPermissionsSet(): Boolean {
+        return checkSelfPermission(
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED &&
+                checkSelfPermission(
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+    }
+
     private fun requestUserPermissions() {
-        val permissions = listOf(
-            android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-            android.Manifest.permission.CAMERA
-        )
+        val permissions = mutableListOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.CAMERA
+        ).apply {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+                add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+        }
 
         val permissionsToRequest = ArrayList<String>()
         for (permission in permissions)

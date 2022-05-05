@@ -1,6 +1,8 @@
 package dk.itu.moapd.scootersharing.viewmodels
 
 import android.app.Application
+import android.location.Location
+import android.location.LocationManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -12,11 +14,28 @@ import kotlinx.coroutines.launch
 class ScooterViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db: AppDatabase = AppDatabase.getDatabase(application)
-    private val scooters = db.scooterDao().getAll()
-    private val availableScooters = db.scooterDao().getAllAvailable()
+
+    fun getClosestScooter(location: Location) : Scooter? {
+        val scooters = db.scooterDao().getAllAvailable()
+        if(scooters.isEmpty())
+            return null
+
+        return db.scooterDao().getAllAvailable().stream().min { x, y ->
+            //if x is less than y, then x
+            //if y is less than x, then y
+            val xLocation = Location(LocationManager.GPS_PROVIDER)
+            val yLocation = Location(LocationManager.GPS_PROVIDER)
+            xLocation.latitude = x.lat
+            xLocation.longitude = x.lon
+            yLocation.latitude = y.lat
+            yLocation.longitude = y.lon
+
+            location.distanceTo(xLocation).compareTo(location.distanceTo(yLocation))
+        }.get()
+    }
 
     fun getAvailableScooters() : LiveData<List<Scooter>> {
-        return availableScooters
+        return db.scooterDao().getAllAvailableLive()
     }
 
     fun getScooter(scooterId: Long) = db.scooterDao().getScooter(scooterId)

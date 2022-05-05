@@ -16,8 +16,8 @@ interface RideDao {
     @Query("SELECT * FROM rides WHERE userId LIKE :userId AND endLat IS NULL AND endLon IS NULL AND `end` IS NULL LIMIT 1")
     fun getCurrentRide(userId: String): Ride?
 
-    /*@Query("SELECT * FROM rides WHERE userId LIKE :userId AND endLat IS NULL AND endLon IS NULL AND `end` IS NULL LIMIT 1")
-    fun getLiveCurrentRide(userId: String): LiveData<Ride?>*/
+    @Query("SELECT * FROM rides WHERE userId LIKE :userId AND endLat IS NULL AND endLon IS NULL AND `end` IS NULL LIMIT 1")
+    fun getLiveCurrentRide(userId: String): LiveData<Ride?>
 
     /*@Query("SELECT COUNT(*) FROM rides WHERE userId LIKE :userId")
     fun getCountFromUser(userId: String) : Int*/

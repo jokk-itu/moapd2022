@@ -49,10 +49,19 @@ class MapFragment : Fragment(), OnMapsSdkInitializedCallback {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onStart() {
+        super.onStart()
         LocalBroadcastManager.getInstance(requireActivity())
             .registerReceiver(locationReceiver, IntentFilter(R.string.location_event.toString()))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(locationReceiver)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         MapsInitializer.initialize(requireContext(), MapsInitializer.Renderer.LATEST, this)
     }
 
